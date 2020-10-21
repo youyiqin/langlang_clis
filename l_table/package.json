@@ -1,0 +1,57 @@
+{
+  "name": "l_table",
+  "description": "为指定目录下的所有课件生成支持查看线上地址的表格",
+  "version": "0.0.0",
+  "author": "youyiqin @youyiqin",
+  "bin": {
+    "l_table": "./bin/run"
+  },
+  "bugs": "https://github.com/youyiqin/l_table/issues",
+  "dependencies": {
+    "@ltd/j-toml": "^0.5.107",
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.0",
+    "tslib": "^1.14.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
+    "@oclif/test": "^1.2.7",
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^10.17.40",
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.1.0",
+    "mocha": "^5.2.0",
+    "nyc": "^14.1.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib"
+  ],
+  "homepage": "https://github.com/youyiqin/l_table",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "bin": "l_table"
+  },
+  "repository": "youyiqin/l_table",
+  "scripts": {
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rimraf lib && tsc -b && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
