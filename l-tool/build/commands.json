@@ -1,0 +1,75 @@
+{
+	"commands": [
+		{
+			"description": "Hello world command",
+			"positionalArgs": [],
+			"args": [
+				{
+					"key": "name",
+					"type": "string",
+					"description": "Name of the person to greet",
+					"isRequired": true,
+					"aliases": [],
+					"positional": false
+				}
+			],
+			"isIndex": true,
+			"name": "*",
+			"path": "index.js",
+			"subCommands": []
+		},
+		{
+			"description": "init, input your token.",
+			"positionalArgs": [],
+			"args": [],
+			"isIndex": false,
+			"name": "init",
+			"path": "init.js",
+			"subCommands": []
+		},
+		{
+			"description": "构建指定目录下的课件或者游戏,默认为当前目录",
+			"positionalArgs": [],
+			"args": [
+				{
+					"key": "path",
+					"type": "string",
+					"description": "",
+					"isRequired": false,
+					"defaultValue": ".",
+					"aliases": [],
+					"positional": false
+				}
+			],
+			"isIndex": false,
+			"name": "build",
+			"path": "build\\index.js",
+			"subCommands": []
+		},
+		{
+			"isDefaultIndex": true,
+			"isIndex": false,
+			"name": "download",
+			"subCommands": [
+				{
+					"description": "lxl download project --pid=xxx",
+					"positionalArgs": [],
+					"args": [
+						{
+							"key": "pid",
+							"type": "string",
+							"description": "",
+							"isRequired": true,
+							"aliases": [],
+							"positional": false
+						}
+					],
+					"isIndex": false,
+					"name": "project",
+					"path": "download\\project.js",
+					"subCommands": []
+				}
+			]
+		}
+	]
+}
