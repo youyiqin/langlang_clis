@@ -28,7 +28,7 @@ class Lanhu extends Command {
             width: item.width,
             height: item.height,
             source: `${pinyinName}_png`,
-            id: pinyinName,
+            id: pinyinName.replace(/-/g, '_'),
             touchEnabled: false,
           }
         })
