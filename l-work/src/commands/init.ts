@@ -19,6 +19,6 @@ export default class Build extends Command {
     const { args, flags } = this.parse(Build)
 
     const targetPath = flags.path ?? process.cwd()
-
+    console.log('build running.');
   }
 }
