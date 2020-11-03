@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {
-  exitCli,
+  // exitCli,
   getCertificate,
   getLog4jsInstance,
   saveCertificate
@@ -36,18 +36,23 @@ export default class Http {
     const instance = axios.create(conf)
     return instance
   }
+
+  // createInstance
 }
 
 function createRequestOption (
   type = 'course',
-  referer = 'http://course.suboy.cn/'
+  referer = 'http://course.suboy.cn/',
+  customConf = {},
+  customHeader = null
 ) {
   const conf = {
     headers: {
-      ...Header,
+      ...(customHeader === null ? Header : customHeader),
       [type === 'course' ? 'token' : 'cookie']: getCertificate(type),
       Referer: referer
-    }
+    },
+    ...customConf
   }
   return conf
 }
@@ -66,7 +71,7 @@ function validCourseToken (type, token, successCallbackFunc, errorCallbackFunc) 
     .then((resp) => {
       log.info('start check token/cookie valid...')
       log.debug(resp.data, resp.status)
-      if (resp.data.code == 0 || resp.status == 200) {
+      if (resp.data.code === 0 || resp.status === 200) {
         saveCertificate(type, token)
         successCallbackFunc()
       } else {

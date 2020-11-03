@@ -62,6 +62,14 @@
 							"isRequired": true,
 							"aliases": [],
 							"positional": false
+						},
+						{
+							"key": "rootPath",
+							"type": "string",
+							"description": "",
+							"isRequired": false,
+							"aliases": [],
+							"positional": false
 						}
 					],
 					"isIndex": false,

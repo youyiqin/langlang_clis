@@ -258,19 +258,21 @@ class Http {
     const instance = _axios.default.create(conf);
 
     return instance;
-  }
+  } // createInstance
+
 
 }
 
 exports.default = Http;
 
-function createRequestOption(type = 'course', referer = 'http://course.suboy.cn/') {
-  const conf = {
-    headers: _objectSpread(_objectSpread({}, Header), {}, {
+function createRequestOption(type = 'course', referer = 'http://course.suboy.cn/', customConf = {}, customHeader = null) {
+  const conf = _objectSpread({
+    headers: _objectSpread(_objectSpread({}, customHeader === null ? Header : customHeader), {}, {
       [type === 'course' ? 'token' : 'cookie']: (0, _index.getCertificate)(type),
       Referer: referer
     })
-  };
+  }, customConf);
+
   return conf;
 }
 
@@ -287,7 +289,7 @@ function validCourseToken(type, token, successCallbackFunc, errorCallbackFunc) {
     log.info('start check token/cookie valid...');
     log.debug(resp.data, resp.status);
 
-    if (resp.data.code == 0 || resp.status == 200) {
+    if (resp.data.code === 0 || resp.status === 200) {
       (0, _index.saveCertificate)(type, token);
       successCallbackFunc();
     } else {
