@@ -1,0 +1,51 @@
+{
+  "name": "l-test",
+  "description": "test langlang course config file",
+  "version": "0.0.0",
+  "author": "youyiqin @youyiqin",
+  "bin": {
+    "l-test": "./bin/run"
+  },
+  "bugs": "https://github.com/youyiqin/l-test/issues",
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.0",
+    "axios": "^0.21.0",
+    "cli-ux": "^5.5.0",
+    "colors": "^1.4.0",
+    "file-regex": "^3.1.0",
+    "toml": "^3.0.0",
+    "tslib": "^1.14.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
+    "@types/node": "^10.17.44",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib"
+  ],
+  "homepage": "https://github.com/youyiqin/l-test",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "bin": "l-test"
+  },
+  "repository": "youyiqin/l-test",
+  "scripts": {
+    "prepack": "rimraf lib && tsc -b && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
