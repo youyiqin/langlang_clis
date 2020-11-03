@@ -1,5 +1,6 @@
 import { Command, flags } from '@oclif/command'
 import cli from 'cli-ux'
+import axios from 'axios'
 const FindFiles = require('file-regex')
 const fs = require('fs')
 const path = require('path')
@@ -73,6 +74,7 @@ type checkResult = {
   title: string,
   courseName: string,
   onlineUrl: string,
+  status?: boolean,
   errorMsg: {
     info: string, content: string
   }[]
@@ -236,18 +238,48 @@ function getAllCourseConfAndErrorMsg(courseDirInfo: courseDir): checkResult[] {
     })
 }
 
+
 function echoCourseTable(data: checkResult[]): void {
-  // 输出课程大纲
-  console.log(colors.green('课程大纲:'));
-  cli.table(data, {
-    '课程名': {
-      minWidth: 24,
-      get: row => row.courseName
-    },
-    '线上地址': {
-      get: row => row.onlineUrl
-    }
+  const tasksArr: any = []
+  data.forEach(item => {
+    tasksArr.push(
+      axios.get(`${item.onlineUrl.replace('c/index.html?name=', 'static/')}/course.json`)
+        .then((response) => {
+          return response.status === 200
+        })
+        .catch((error) => {
+          return false
+        })
+    )
   })
+  Promise.all(tasksArr)
+    .then((result) => {
+      data.map((course, index) => {
+        return Object.assign(course, {
+          status: result[index]
+        })
+      })
+      // 输出课程大纲
+      console.log(colors.green('课程大纲:'));
+      cli.table(data, {
+        '课程名': {
+          minWidth: 24,
+          get: row => row.courseName
+        },
+        '线上地址': {
+          minWidth: 24,
+          get: row => row.onlineUrl
+        },
+        '构建状态': {
+          minWidth: 24,
+          get: row => row.status ? colors.green("\t\t✔") : colors.red("\t\t×")
+        }
+      })
+    })
+    .catch(error => {
+      console.log(error);
+      process.exit(0)
+    })
 }
 
 function showResultAndError(data: checkResult[]): void {
@@ -275,7 +307,8 @@ class LTest extends Command {
     // flag with a directory path (-d, --directory=VALUE)
     directory: flags.string({ char: 'd', description: 'course directiry, default is current directory' }),
     table: flags.boolean({ char: 't', description: '打印课程大纲,默认为不打印.' }),
-    level: flags.string({ char: 'l', description: '查找文件的层级,默认查找2层.例如在当前目录下执行命令,可以对当前和当前目录下的文件内的course.conf进行测试.' })
+    level: flags.string({ char: 'l', description: '查找文件的层级,默认查找2层.例如在当前目录下执行命令,可以对当前和当前目录下的文件内的course.conf进行测试.' }),
+    force: flags.boolean({ char: 'f', description: '强制执行,不提示,默认开启' })
   }
 
   async run() {
@@ -283,12 +316,16 @@ class LTest extends Command {
     const currentDir = flags.directory ?? process.cwd()
     const printCourseTable = flags.table ?? false
     const depthLevel = flags.level ?? 2
-    this.log(colors.green(`检查${currentDir}下的所有course.conf文件?`))
-    const name = await cli.prompt('(y/n)')
-    if (name !== "y") process.exit()
+    const force = flags.force ?? true
+    if (force) {
+      this.log(colors.green(`检查${currentDir}下的所有course.conf文件.`))
+    } else {
+      this.log(colors.green(`检查${currentDir}下的所有course.conf文件?`))
+      const name = await cli.prompt('(y/n)')
+      if (name !== "y") process.exit()
+    }
     // 获取目录下所有course.conf文件的路径
     const allConfPath = await FindFiles(currentDir, /course\.conf/, depthLevel)
-
     // get all config file full path
     const result = getAllCourseConfAndErrorMsg(allConfPath)
     showResultAndError(result)
