@@ -1,9 +1,11 @@
 import { Command, flags } from '@oclif/command'
 import cli from 'cli-ux'
+const FindFiles = require('file-regex')
 const fs = require('fs')
 const path = require('path')
 const colors = require('colors')
 const toml = require('toml')
+
 
 const validStartString = [
   '[',
@@ -75,6 +77,11 @@ type checkResult = {
     info: string, content: string
   }[]
 }
+
+type courseDir = {
+  dir: string;
+  file: string;
+}[]
 
 function defaultCheckRule(content: string, currentPath: string, tempResult: checkResult): checkResult {
   // 获取首个title和course_name的值就行了,作为阀值
@@ -170,16 +177,17 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
   return tempResult
 }
 
-function limitPaginationAndBackdrop(content: string, currentPath: string, tempResult: checkResult): checkResult {
+/*
+* 1. pagination和backdrop共存
+* 2. tip_word不能用图片,应该用tip_image
+*/
+function ruleA(content: string, currentPath: string, tempResult: checkResult): checkResult {
   const tomlStr = content
-  // .split('\r\n')
-  // .map((item, index) => {
-  //   return {
-  //     lineIndex: index,
-  //     lineContent: item.replace('=', ' = ')
-  //   }
-  // })
-  const data = toml.parse(tomlStr)
+    .split('\r\n')
+    .filter(item => !(item.startsWith('#') || item === '' || item.startsWith('audio')))
+    .map(item => item.replace(/=(.*)/, '=\"$1\"'))
+    .join('\r\n')
+  const data = toml.parse(tomlStr);
   for (const key in data) {
     if (Object.prototype.hasOwnProperty.call(data, key)) {
       const element = data[key];
@@ -188,6 +196,13 @@ function limitPaginationAndBackdrop(content: string, currentPath: string, tempRe
         tempResult.errorMsg.push({
           info: `${key}: 存在异常,pagination和backdrop不可共存.`,
           content: ""
+        })
+      }
+      if (!!element.tip_word && element.tip_word.indexOf('/') !== -1) {
+        tempResult.noError = false;
+        tempResult.errorMsg.push({
+          info: `${key}: 下的tip_word内容存在异常`,
+          content: `tip_word=${element.tip_word}`
         })
       }
     }
@@ -208,16 +223,14 @@ function check(content: string, currentPath: string): checkResult {
   // 使用不断添加的测试函数进行测试,我想用函数式的方法写,但是太菜,没想到怎么写.
   // push错误信息,包含info: 错误描述, content: 字段内容
   result = defaultCheckRule(content, currentPath, result)
-  result = limitPaginationAndBackdrop(content, currentPath, result)
+  result = ruleA(content, currentPath, result)
   return result
 }
 
-function getAllCourseConfAndErrorMsg(basicDir: string): checkResult[] {
-  const dirArr = fs.readdirSync(basicDir)
-  return dirArr
-    .filter((dir: string) => fs.existsSync(path.join(basicDir, dir, "course.conf")))
-    .map((dir: string) => {
-      const currentPath = path.join(basicDir, dir, "course.conf");
+function getAllCourseConfAndErrorMsg(courseDirInfo: courseDir): checkResult[] {
+  return courseDirInfo
+    .map((dirInfo) => {
+      const currentPath = path.join(dirInfo.dir, dirInfo.file);
       const content = fs.readFileSync(currentPath, 'utf8')
       return check(content, currentPath)
     })
@@ -245,7 +258,7 @@ function showResultAndError(data: checkResult[]): void {
   data
     .filter(item => !item.noError)
     .forEach(item => {
-      console.log(colors.green(item.title));
+      console.log('\n位置:\t', colors.red(item.title));
       item.errorMsg.forEach(i => {
         console.log(i.info, i.content);
       })
@@ -261,18 +274,23 @@ class LTest extends Command {
     help: flags.help({ char: 'h' }),
     // flag with a directory path (-d, --directory=VALUE)
     directory: flags.string({ char: 'd', description: 'course directiry, default is current directory' }),
-    table: flags.boolean({ char: 't', description: '打印课程大纲,默认为不打印.' })
+    table: flags.boolean({ char: 't', description: '打印课程大纲,默认为不打印.' }),
+    level: flags.string({ char: 'l', description: '查找文件的层级,默认查找2层.例如在当前目录下执行命令,可以对当前和当前目录下的文件内的course.conf进行测试.' })
   }
 
   async run() {
     const { flags } = this.parse(LTest)
     const currentDir = flags.directory ?? process.cwd()
     const printCourseTable = flags.table ?? false
+    const depthLevel = flags.level ?? 2
     this.log(colors.green(`检查${currentDir}下的所有course.conf文件?`))
     const name = await cli.prompt('(y/n)')
     if (name !== "y") process.exit()
+    // 获取目录下所有course.conf文件的路径
+    const allConfPath = await FindFiles(currentDir, /course\.conf/, depthLevel)
+
     // get all config file full path
-    const result = getAllCourseConfAndErrorMsg(currentDir)
+    const result = getAllCourseConfAndErrorMsg(allConfPath)
     showResultAndError(result)
     printCourseTable && echoCourseTable(result)
   }
