@@ -106,7 +106,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
           tempResult.noError = false
           tempResult.errorMsg.push({
             info: `line: ${line.lineIndex}: 字段左右存在空格`,
-            content: colors.red(line.lineContent)
+            content: colors.yellow(line.lineContent)
           })
         }
       })
@@ -115,7 +115,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
         tempResult.noError = false
         tempResult.errorMsg.push({
           info: `line: ${line.lineIndex}: 存在未知的键值,如果没错就忽略,让我更新修复.`,
-          content: colors.red(line.lineContent)
+          content: colors.yellow(line.lineContent)
         })
       }
       if (kv.length === 2) {
@@ -127,6 +127,14 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
         if (kv[0] === 'course_name' && tempCount <= 1) {
           tempResult.onlineUrl = `http://s.langlangyun.com/c/index.html?name=${kv[1]}`
           tempCount += 1
+        }
+        // 检查是否有空的值
+        if (kv[1] === "" || kv[1].indexOf(" ") !== -1) {
+          tempResult.noError = false
+          tempResult.errorMsg.push({
+            info: `line: ${line.lineIndex}: 漏写值,或者值之间存在多余的空格`,
+            content: colors.yellow(line.lineContent)
+          })
         }
 
         if (kv[0] === "")
@@ -141,9 +149,10 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
             'popover',
             'tip_sound_autoplay'
           ].includes(kv[0]) === ["true", "false"].includes(kv[1]))) {
+            tempResult.noError = false
             tempResult.errorMsg.push({
               info: `line: ${line.lineIndex}: 不合适的键值对组合.`,
-              content: colors.red(line.lineContent)
+              content: colors.yellow(line.lineContent)
             })
           }
         // 检查路径下文件是否存在
@@ -171,7 +180,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
           tempResult.noError = false
           tempResult.errorMsg.push({
             info: `line: ${line.lineIndex}: 配置值指向的文件不存在.`,
-            content: colors.red(line.lineContent)
+            content: colors.yellow(line.lineContent)
           })
         }
       }
@@ -290,11 +299,32 @@ function showResultAndError(data: checkResult[]): void {
   data
     .filter(item => !item.noError)
     .forEach(item => {
-      console.log('\n位置:\t', colors.red(item.title));
+      console.log(colors.green('\n位置:\t'), colors.white(item.title));
       item.errorMsg.forEach(i => {
-        console.log(i.info, i.content);
+        console.log(i.info, '\n', i.content);
       })
     })
+}
+
+function saveResult(data: checkResult[]) {
+  let maxSizeOfName = 0;
+  data.forEach(course => {
+    if (byteLength(course.courseName) >= maxSizeOfName) maxSizeOfName = byteLength(course.courseName);
+  })
+  data.forEach(course => {
+    let name = course.courseName + ' '.repeat(maxSizeOfName - byteLength(course.courseName))
+    fs.appendFileSync('course.txt', `${name}\t\t${course.onlineUrl}\n`)
+  })
+}
+
+function byteLength(str: string): number {
+  let byteLength = 0
+  let len = str.length
+  if (!str) return 0
+  for (let i = 0; i < len; i++) {
+    byteLength += str.charCodeAt(i) > 255 ? 2 : 1
+  }
+  return byteLength
 }
 
 class LTest extends Command {
@@ -308,7 +338,8 @@ class LTest extends Command {
     directory: flags.string({ char: 'd', description: 'course directiry, default is current directory' }),
     table: flags.boolean({ char: 't', description: '打印课程大纲,默认为不打印.' }),
     level: flags.string({ char: 'l', description: '查找文件的层级,默认查找2层.例如在当前目录下执行命令,可以对当前和当前目录下的文件内的course.conf进行测试.' }),
-    force: flags.boolean({ char: 'f', description: '强制执行,不提示,默认开启' })
+    force: flags.boolean({ char: 'f', description: '强制执行,不提示,默认开启' }),
+    out: flags.boolean({ char: 'o', description: '输出保存课程线上地址的txt文档,添加此标志即可保存结果在当前目录下的course.txt文件内' })
   }
 
   async run() {
@@ -317,6 +348,7 @@ class LTest extends Command {
     const printCourseTable = flags.table ?? false
     const depthLevel = flags.level ?? 2
     const force = flags.force ?? true
+    const out = flags.out ?? false
     if (force) {
       this.log(colors.green(`检查${currentDir}下的所有course.conf文件.`))
     } else {
@@ -330,6 +362,7 @@ class LTest extends Command {
     const result = getAllCourseConfAndErrorMsg(allConfPath)
     showResultAndError(result)
     printCourseTable && echoCourseTable(result)
+    out && saveResult(result)
   }
 }
 
