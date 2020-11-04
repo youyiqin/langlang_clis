@@ -1,9 +1,11 @@
 import { Command, flags } from '@oclif/command'
-import Client, { logError, getSvnUrl } from '../lib'
+import initClient, { logError, getSvnUrl } from '../lib'
 import * as Colors from 'colors'
 import cli from 'cli-ux'
 import * as inquirer from 'inquirer'
 const FindFiles = require('file-regex')
+
+const Client = initClient('token')
 
 export default class Build extends Command {
   static description = '用于构建课件,游戏.'
@@ -91,8 +93,6 @@ export default class Build extends Command {
                 dir: svnData.url.slice(svnData.url.lastIndexOf('/') + 1)
               })
             } else {
-              console.log('running here');
-
               // 别太快,如果是构建多个目标,间歇性等待一秒钟
               if ((index + 1) % 3 === 0) {
                 await cli.wait(1000)

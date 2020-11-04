@@ -1,12 +1,16 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import axios from 'axios'
+import axios, { AxiosInstance } from 'axios'
 const svnCommands = require('node-svn-ultimate')
 import * as Colors from 'colors'
 import { svnUrlDataType } from './types'
+const cheerio = require('cheerio')
+import cli from 'cli-ux'
 
-const confPath = path.join(process.env.HOME ?? process.cwd(), 'langlang_build.conf')
+const tokenPath = path.join(process.env.HOME ?? process.cwd(), 'langlang_build_token.conf')
+const cookiePath = path.join(process.env.HOME ?? process.cwd(), 'langlang_build_cookie.conf')
 const errorPath = path.join(process.env.TEMP ?? process.cwd(), 'langlang_build_error.log')
+
 
 const Header = {
   'User-Agent':
@@ -15,25 +19,28 @@ const Header = {
   'Content-Type': 'application/json;charset=UTF-8'
 }
 
-const Client = axios.create({
+const initClient = (certificateType: string) => axios.create({
   timeout: 6000,
   withCredentials: true,
   maxRedirects: 0,
-  headers: Object.assign({}, Header, getCertificate())
+  headers: Object.assign({}, Header, {
+    [certificateType === 'token' ? 'token' : 'cookie']: getCertificate(certificateType).certificate
+  })
 })
 
 
-function getCertificate(): {
-  token: string
+function getCertificate(certificateType: string): {
+  certificate: string
 } {
+  const confPath = certificateType === "token" ? tokenPath : cookiePath
   try {
     if (fs.existsSync(confPath)) {
       return {
-        token: fs.readFileSync(confPath, 'utf8')
+        certificate: fs.readFileSync(confPath, 'utf8')
       }
     }
     return {
-      token: ''
+      certificate: ''
     }
   } catch (error) {
     logError(error.message)
@@ -41,7 +48,8 @@ function getCertificate(): {
   }
 }
 
-const saveCertificate = (str: string): boolean => {
+const saveCertificate = (str: string, certificateType: string): boolean => {
+  const confPath = certificateType === 'token' ? tokenPath : cookiePath
   try {
     fs.writeFileSync(confPath, str, 'utf8')
     return true
@@ -104,5 +112,98 @@ const getSvnUrl = async (path = process.cwd()): Promise<svnUrlDataType> => {
   })
 }
 
-export default Client
-export { saveCertificate, getCertificate, logError, getSvnUrl }
+const createFileOrDire = (_path: string, type = 'file', fileStr = '', callback: Function | undefined = undefined) => {
+  if (type === 'file' && !fs.existsSync(path.dirname(_path))) {
+    fs.mkdirSync(path.dirname(_path))
+  }
+  type === 'file' ? fs.writeFileSync(_path, fileStr, 'utf8') : fs.mkdirSync(_path, { recursive: true })
+  if (callback !== undefined) callback()
+}
+// 获取附件地址,下载附件
+const getAttachmentsDownloadAndDownloadFiles = (Client: AxiosInstance, url: string, savePath: string = process.cwd()) => {
+  return new Promise(async (resolve) => {
+    try {
+      const response = await Client.get(url)
+      const htmlString = response.data
+      const $ = cheerio.load(htmlString)
+      // 下载地址数组,全都是a标签
+      const downloadATagsArray = $('').map(function (i: any, el: any) {
+
+      }).toArray()
+      // 如果这一节没有附件,就退出
+      if (downloadATagsArray.length === 0) {
+        return resolve({
+          status: false,
+          fileName: '',
+          downloadUrl: url,
+          info: '这一节没有附件'
+        })
+      }
+
+      downloadATagsArray.forEach(async (el: any) => {
+        const downloadUrl = $(el).attr('href')
+
+        const saveFileName = $(el).text()
+        console.log(saveFileName, 'is save file name', $(el));
+        if (!(saveFileName.endsWith('.mp4') || saveFileName.endsWith('.fla'))) {
+          // await downloadFile(downloadUrl, path.join(savePath, saveFileName))
+          cli.action.start(`开始下载: ${saveFileName}......`)
+          const response = await Client.get(downloadUrl, {
+            responseType: 'stream'
+          })
+
+          console.log(response.data.length, 'data length');
+
+
+          const resultSavePath = path.join(savePath, downloadUrl.slice(downloadUrl.indexOf('download/') + 11), saveFileName)
+          if (fs.existsSync(resultSavePath) && fs.statSync(resultSavePath)['size'] < response.data.length) {
+            console.log(Colors.blue(`${fs.statSync(resultSavePath)['size']}---${response.data.length}`));
+
+            fs.unlinkSync(resultSavePath)
+            // 将响应结果数据通过管道写入磁盘文件
+            response.data.pipe(fs.createWriteStream(resultSavePath))
+            // 监听管道状态,处理promise
+            response.data.on('end', () => {
+              cli.action.stop()
+              return resolve({
+                status: true,
+                fileName: saveFileName,
+                downloadUrl,
+                info: 'success'
+              })
+            })
+          } else if (!fs.existsSync(resultSavePath) || fs.statSync(resultSavePath)['size'] === response.data.length) {
+            // console.log(Colors.blue(`${response.data.length}`));
+            // 如果存在且长度相等,则跳过
+            return resolve({
+              status: true,
+              fileName: saveFileName,
+              downloadUrl,
+              info: 'success'
+            })
+          }
+        } else {
+          return resolve({
+            status: false,
+            fileName: '',
+            downloadUrl: url,
+            info: '跳过视频和fla文件'
+          })
+        }
+      })
+
+    } catch (error) {
+      logError(error.message)
+      return resolve({
+        status: false,
+        fileName: '',
+        downloadUrl: url,
+        info: '异常页面'
+      })
+    }
+  })
+}
+
+
+export default initClient
+export { saveCertificate, getCertificate, logError, getSvnUrl, createFileOrDire, getAttachmentsDownloadAndDownloadFiles }
