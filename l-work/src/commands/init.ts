@@ -1,24 +1,17 @@
 import { Command, flags } from '@oclif/command'
+import cli from 'cli-ux'
+import { saveCertificate } from '../lib'
 
 export default class Build extends Command {
-  static description = '用于构建课件,游戏.'
+  static description = '初始化凭证,直接从浏览器复制token并输入即可.'
 
   static examples = [
-    `$ l-work Build <path>`,
+    `$ l-work init`,
   ]
 
-  static flags = {
-    help: flags.help({ char: 'h' }),
-    // flag with a value (-n, --name=VALUE)
-    path: flags.string({ char: 'p', description: '目标路径,默认为当前路径.' }),
-    // flag with no value (-f, --force)
-    force: flags.boolean({ char: 'f' }),
-  }
-
   async run() {
-    const { args, flags } = this.parse(Build)
-
-    const targetPath = flags.path ?? process.cwd()
-    console.log('build running.');
+    // const { args, flags } = this.parse(Build)
+    const token = await cli.prompt('从浏览器复制token并输入')
+    saveCertificate(token)
   }
 }

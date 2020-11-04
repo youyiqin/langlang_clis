@@ -67,7 +67,6 @@ export default class Build extends Command {
       buildArr = result.map(item => item.dir)
     }
     // console.log(Colors.green('build running.'));
-    cli.action.start(Colors.white('开始构建目标...'))
     const buildTasksArr: any[] = []
     buildArr.forEach(async (item, index) => {
       buildTasksArr.push(new Promise(async (resolve, reject) => {
@@ -79,12 +78,21 @@ export default class Build extends Command {
           template,
           url: svnData.url
         }
+        cli.action.start(Colors.white('预处理构建流程...'))
         // check conf
         Client.post(`http://course.suboy.cn/cgi/auth/build/${svnData.buildType}/conf`, postData)
           .then(async res => {
             if (res.data.code !== 0) {
-              console.log(Colors.red(res.data.message));
+              cli.action.stop()
+              console.log('提示信息:', Colors.red(res.data.message));
+              console.log(Colors.green('如果token失效,则重新从浏览器获取token,再运行 l-work init 命令初始化凭证.'));
+              return resolve({
+                status: false,
+                dir: svnData.url.slice(svnData.url.lastIndexOf('/') + 1)
+              })
             } else {
+              console.log('running here');
+
               // 别太快,如果是构建多个目标,间歇性等待一秒钟
               if ((index + 1) % 3 === 0) {
                 await cli.wait(1000)
@@ -95,6 +103,7 @@ export default class Build extends Command {
                 url: svnData.url
               }).then(buildRes => {
                 if (buildRes.data.code === 0) {
+                  cli.action.stop()
                   // build successfully
                   return resolve({
                     status: true,
@@ -102,6 +111,7 @@ export default class Build extends Command {
                   })
                 } else {
                   // build failed
+                  cli.action.stop()
                   return resolve({
                     status: false,
                     dir: svnData.buildType === "course" ? res.data.title : res.data.course
@@ -109,6 +119,7 @@ export default class Build extends Command {
                 }
               }).catch(error => {
                 // build failed
+                cli.action.stop()
                 logError(error.message)
                 return resolve({
                   status: false,
@@ -118,6 +129,7 @@ export default class Build extends Command {
             }
           })
           .catch(err => {
+            cli.action.stop()
             logError(err.message);
             console.log(Colors.red(err.message));
             resolve({
@@ -130,7 +142,6 @@ export default class Build extends Command {
     // get promise all
     Promise.all(buildTasksArr)
       .then(result => {
-        cli.action.stop()
         cli.table(result, {
           target: {
             minWidth: 48,
