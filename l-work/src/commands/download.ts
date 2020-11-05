@@ -50,10 +50,12 @@ export default class Build extends Command {
         let pinyinTitle = pinyin.convertToPinyin(title, '', true).replace(/[^a-zA-Z0-9]/g, '')
         let directoryName;
         // 直接读取目标目录,按拼音获取对应的旧目录,避免创建新目录
-        fs.readdirSync(targetRootPath).forEach((item: string) => {
-          const tempPinyin = item.replace(/[0-9]/g, '')
-          dircData[tempPinyin] = item
-        })
+        if (fs.existsSync(targetRootPath)) {
+          fs.readdirSync(targetRootPath).forEach((item: string) => {
+            const tempPinyin = item.replace(/[0-9]/g, '')
+            dircData[tempPinyin] = item
+          })
+        }
         if (dircData[pinyinTitle] === undefined) {
           const randomNum = ~~(Math.random() * 8999 + 1000)
           const pinyinTitle = pinyin.convertToPinyin(`${title}${randomNum}`, '', true).replace(/[^a-zA-Z0-9]/g, '')
