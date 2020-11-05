@@ -54,7 +54,7 @@ export default class Build extends Command {
           .then(async res => {
             if (res.data.code !== 0) {
               cli.action.stop()
-              console.log('提示信息:', Colors.red(res.data.message));
+              console.log('提示信息:', Colors.red(`${res.data.message},address:${svnData.url}`));
               console.log(Colors.green('如果token失效,则重新从浏览器获取token,再运行 l-work init 命令初始化凭证.'));
               return resolve({
                 status: false,
@@ -63,7 +63,9 @@ export default class Build extends Command {
             } else {
               // 别太快,如果是构建多个目标,间歇性等待一秒钟
               if ((index + 1) % 3 === 0) {
-                await cli.wait(10000)
+                cli.action.start('暂停等待几秒钟,太快服务器容易莫名其妙返回异常.');
+                await cli.wait(5000)
+                cli.action.stop()
               }
               // 配置检查没问题可以构建就构建,存在构建的目标不是想要的目标的可能,但是这个只能怪用的人...
               Client.post(`http://course.suboy.cn/cgi/auth/build/${svnData.buildType}/start`, svnData.buildType === "course" ? postData : {
