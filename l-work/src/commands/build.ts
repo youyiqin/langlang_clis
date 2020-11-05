@@ -1,8 +1,7 @@
 import { Command, flags } from '@oclif/command'
-import initClient, { logError, getSvnUrl } from '../lib'
+import initClient, { logError, getSvnUrl, chooseBuildOption } from '../lib'
 import * as Colors from 'colors'
 import cli from 'cli-ux'
-import * as inquirer from 'inquirer'
 const FindFiles = require('file-regex')
 
 const Client = initClient('token')
@@ -31,45 +30,14 @@ export default class Build extends Command {
     const level = flags.level
     const env = flags.env
     const template = flags.template
-    // const force = flags.force
     // get target paths
     // 一个数组,每个元素都是一个对象,包含文件名和目录名
     cli.action.start(Colors.white('识别指定/默认地址内的目录...'))
     let result: { dir: string, file: string }[] = await FindFiles(targetPath, /course\.(json|conf)$/, level)
     result = result.filter(item => !item.dir.endsWith('static'))
     cli.action.stop()
-    let buildArr: string[]
-    let buildTarget: any
-    // 如果只有一个目标,则不用选择
-    if (result.length > 1) {
-      // 选择需要构建的目标
-      let isBuildAll: any = await inquirer.prompt([{
-        name: 'all',
-        message: '是否构建此目录下所有内容?',
-        type: 'list',
-        choices: [{ name: '全部' }, { name: '由我选择' }]
-      }])
-      if (isBuildAll.all === '由我选择') {
-        buildTarget = await inquirer.prompt([
-          {
-            name: 'target',
-            message: '选择需要构建的目标:',
-            type: 'checkbox',
-            choices: result.map(item => {
-              return {
-                name: item.dir
-              }
-            })
-          }
-        ])
-      }
-      // buildTarget.target is array
-      buildArr = buildTarget.target
-    } else {
-      buildArr = result.map(item => item.dir)
-    }
-    // console.log(Colors.green('build running.'));
     const buildTasksArr: any[] = []
+    const buildArr = await chooseBuildOption(result)
     buildArr.forEach(async (item, index) => {
       buildTasksArr.push(new Promise(async (resolve, reject) => {
         // generator svn info data
@@ -95,7 +63,7 @@ export default class Build extends Command {
             } else {
               // 别太快,如果是构建多个目标,间歇性等待一秒钟
               if ((index + 1) % 3 === 0) {
-                await cli.wait(1000)
+                await cli.wait(10000)
               }
               // 配置检查没问题可以构建就构建,存在构建的目标不是想要的目标的可能,但是这个只能怪用的人...
               Client.post(`http://course.suboy.cn/cgi/auth/build/${svnData.buildType}/start`, svnData.buildType === "course" ? postData : {
