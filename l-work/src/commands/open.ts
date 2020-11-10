@@ -27,16 +27,22 @@ export default class Build extends Command {
 
   async run() {
     const { args } = this.parse(Build)
+
+    // 指定一个目录,默认当前目录
     const targetPath = path.resolve(args.path)
 
     // 直接在数据库中查询看看
     const dbData = db.get('paths').value()
-
+    let targetUrl;
     dbData.forEach(async (item: any) => {
       if (item[targetPath]) {
-        await cli.open('https://www.baidu.com')
+        // await cli.open(item[targetPath])
+        // logAndExit('kai')
+        targetUrl = item[targetPath]
       }
     })
+    // await cli.wait(5000)
+    targetUrl && await cli.open(targetUrl) && process.exit()
 
     if (fs.existsSync(path.join(targetPath, 'course.conf'))) {
       // 课件
@@ -87,13 +93,15 @@ export default class Build extends Command {
             }, {
               headers: { 'Content-Type': 'application/json', cookie: certificate.certificate }
             }).then(response => {
+              console.log(response.data);
+
               if (response.data.code === 0 && response.data.data !== undefined) {
                 resolve(response.data.data.map((item: any) => {
                   item['type'] = typeItem
                   return item
                 }))
               } else {
-                resolve([])
+                logAndExit(response.data.message ?? 'Unknown, 也许是cookie过期.')
               }
             }).catch(err => {
               logAndExit(err.message)
@@ -109,16 +117,27 @@ export default class Build extends Command {
           })
         }).then(async (_) => {
           if (resultArr.length === 1) {
-            await cli.open(`http://s.langlangyun.com/c/index.html?${resultArr[0]['type']}=${resultArr[0]['hash_name']}`)
+            const url = `http://s.langlangyun.com/c/index.html?${resultArr[0]['type']}=${resultArr[0]['hash_name']}`
+            // 写入数据库
+            if (db.get('paths').find({ [targetPath]: url }).value() === undefined) {
+              db
+                .get('paths')
+                .push({
+                  [targetPath]: url
+                })
+                .write()
+            }
+            // open browser
+            await cli.open(url)
           } else {
-            console.log('具有多个类型的同名游戏:');
+            console.log('具有多个类型的同名游戏:', resultArr);
             cli.table(resultArr, {
               type: {
                 minWidth: 12,
                 get: row => row.type ?? 'unknown'
               },
               url: {
-                get: row => `http://s.langlangyun.com/c/index.html?${row['type']}=${row['hash_name']`
+                get: row => `http://s.langlangyun.com/c/index.html?${row['type']}=${row['hash_name']}`
               }
             })
           }
