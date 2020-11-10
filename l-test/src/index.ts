@@ -96,7 +96,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
         lineContent: line
       }
     })
-    .filter(line => !(line.lineContent === '' || line.lineContent.startsWith('#')))
+    .filter(line => !(line.lineContent === '' || line.lineContent.startsWith('#') || line.lineContent.replace(/[ ]+/g, '') === ''))
     .filter(line => !(line.lineContent.startsWith('[')))
     .forEach(line => {
       const kv = line.lineContent.split('=')
