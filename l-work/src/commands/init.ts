@@ -18,9 +18,9 @@ export default class Build extends Command {
       type: 'list',
       choices: [{ name: '通用配置管理' }, { name: 'TAPD' }]
     }])
-    const certificate = await cli.prompt(`从浏览器复制${certificateType.type === "TAPD" ? "cookie" : "token"}并输入`)
+    const certificate = await cli.prompt(`并输入cookie:`)
     cli.action.start('保存凭证...')
-    if (saveCertificate(certificate, certificateType.type === "TAPD" ? "cookie" : "token")) {
+    if (saveCertificate(certificate, certificateType.type === "TAPD" ? "cookie" : "kejian")) {
       cli.action.stop()
     }
   }

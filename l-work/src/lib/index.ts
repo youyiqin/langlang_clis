@@ -20,7 +20,7 @@ import cli from 'cli-ux'
 // })
 //   .write()
 
-const tokenPath = path.join(process.env.HOME ?? process.cwd(), 'langlang_build_token.conf')
+const kejianPath = path.join(process.env.HOME ?? process.cwd(), 'langlang_build_token.conf')
 const cookiePath = path.join(process.env.HOME ?? process.cwd(), 'langlang_build_cookie.conf')
 const errorPath = path.join(process.env.TEMP ?? process.cwd(), 'langlang_build_error.log')
 
@@ -32,20 +32,20 @@ const Header = {
   'Content-Type': 'application/json;charset=UTF-8'
 }
 
-const initClient = (certificateType: string) => axios.create({
+const initClient = (site: string) => axios.create({
   timeout: 10000,
   withCredentials: true,
   maxRedirects: 0,
   headers: Object.assign({}, Header, {
-    [certificateType === 'token' ? 'token' : 'cookie']: getCertificate(certificateType).certificate
+    cookie: getCertificate(site).certificate
   })
 })
 
 
-function getCertificate(certificateType: string): {
+function getCertificate(site: string): {
   certificate: string
 } {
-  const confPath = certificateType === "token" ? tokenPath : cookiePath
+  const confPath = site === "kejian" ? kejianPath : cookiePath
   try {
     if (fs.existsSync(confPath)) {
       return {
@@ -62,7 +62,7 @@ function getCertificate(certificateType: string): {
 }
 
 const saveCertificate = (str: string, certificateType: string): boolean => {
-  const confPath = certificateType === 'token' ? tokenPath : cookiePath
+  const confPath = certificateType === 'kejian' ? kejianPath : cookiePath
   try {
     fs.writeFileSync(confPath, str, 'utf8')
     return true
