@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command'
 import cli from 'cli-ux'
 import axios from 'axios'
-import { logAndExit } from '../lib/'
+import { logAndExit, getCertificate } from '../lib/'
 const fs = require('fs')
 const path = require('path')
 const lowdb = require('lowdb')
@@ -71,8 +71,64 @@ export default class Build extends Command {
       })
       // cli.open(url)
     } else if (fs.existsSync(path.join(targetPath, 'course.json'))) {
-      // 发起web查询,查到则更新本地数据库数据,否则返回失败
-      axios.get('http://kejian.suboy.cn')
+      try {
+        // 获取cookie
+        const certificate = getCertificate('kejian');
+        // 读取配置文件信息
+        const courseJson = JSON.parse(fs.readFileSync(path.join(targetPath, 'course.json'), 'utf8'));
+
+        // 三种类型一起查了,得到promise array
+        const tasksArr = ['egret', 'cocos', 'h5'].map(async (typeItem: string) => {
+          // 查询地址
+          const url = `http://kejian.suboy.cn/cgi/auth/build/${typeItem}/stored`
+          return new Promise((resolve) => {
+            axios.post(url, {
+              searchKey: courseJson.course ? courseJson.course : (logAndExit('无效的course.json配置'))
+            }, {
+              headers: { 'Content-Type': 'application/json', cookie: certificate.certificate }
+            }).then(response => {
+              if (response.data.code === 0 && response.data.data !== undefined) {
+                resolve(response.data.data.map((item: any) => {
+                  item['type'] = typeItem
+                  return item
+                }))
+              } else {
+                resolve([])
+              }
+            }).catch(err => {
+              logAndExit(err.message)
+            })
+          })
+        })
+
+        // 查到则更新本地数据库数据,否则返回失败
+        let resultArr: any[] = []
+        Promise.all(tasksArr).then(result => {
+          result.filter((item: any) => item.length > 0).forEach((item: any) => {
+            item.forEach((i: any) => resultArr.push(i))
+          })
+        }).then(async (_) => {
+          if (resultArr.length === 1) {
+            await cli.open(`http://s.langlangyun.com/c/index.html?${resultArr[0]['type']}=${resultArr[0]['hash_name']}`)
+          } else {
+            console.log('具有多个类型的同名游戏:');
+            cli.table(resultArr, {
+              type: {
+                minWidth: 12,
+                get: row => row.type ?? 'unknown'
+              },
+              url: {
+                get: row => `http://s.langlangyun.com/c/index.html?${row['type']}=${row['hash_name']`
+              }
+            })
+          }
+        }).catch(err => {
+          logAndExit(err.message)
+        })
+        // logAndExit('out')
+      } catch (error) {
+        logAndExit(error.message)
+      }
     } else {
       logAndExit('无效的目标目录')
     }
