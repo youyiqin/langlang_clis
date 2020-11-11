@@ -41,6 +41,11 @@ const initClient = (site: string) => axios.create({
   })
 })
 
+function logAndExit(message: string, color = Colors.red) {
+  console.log(color(message));
+  process.exit()
+}
+
 
 function getCertificate(site: string): {
   certificate: string
@@ -301,4 +306,4 @@ const chooseBuildOption = async (result: any[]): Promise<string[]> => {
 }
 
 export default initClient
-export { saveCertificate, getCertificate, logError, getSvnUrl, createFileOrDire, getAttachmentsDownloadAndDownloadFiles, chooseBuildOption }
+export { saveCertificate, getCertificate, logError, getSvnUrl, createFileOrDire, getAttachmentsDownloadAndDownloadFiles, chooseBuildOption, logAndExit }

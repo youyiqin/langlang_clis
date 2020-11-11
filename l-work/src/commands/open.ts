@@ -93,8 +93,6 @@ export default class Build extends Command {
             }, {
               headers: { 'Content-Type': 'application/json', cookie: certificate.certificate }
             }).then(response => {
-              console.log(response.data);
-
               if (response.data.code === 0 && response.data.data !== undefined) {
                 resolve(response.data.data.map((item: any) => {
                   item['type'] = typeItem
