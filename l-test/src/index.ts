@@ -308,13 +308,17 @@ function showResultAndError(data: checkResult[]): void {
 }
 
 function saveResult(data: checkResult[]) {
+  if (fs.existsSync('course.txt')) {
+    fs.unlinkSync('course.txt')
+  }
   let maxSizeOfName = 0;
   data.forEach(course => {
     if (byteLength(course.courseName) >= maxSizeOfName) maxSizeOfName = byteLength(course.courseName);
   })
   data.forEach(course => {
-    let name = course.courseName + ' '.repeat(maxSizeOfName - byteLength(course.courseName))
-    fs.writeFileSync('course.txt', `${name}\t\t${course.onlineUrl}\n`)
+    const expendCharNum = course.courseName.indexOf('”') !== -1 ? 8 : 0
+    let name = course.courseName + ' '.repeat(maxSizeOfName - byteLength(course.courseName) + expendCharNum)
+    fs.appendFileSync('course.txt', `${name}\t\t${course.onlineUrl}\n`)
   })
 }
 
