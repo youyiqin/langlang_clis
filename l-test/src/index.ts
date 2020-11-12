@@ -43,7 +43,6 @@ const validStartString = [
   'prev_icon',
   'pagination',
   'picture',
-  'picture_PATTERN',
   'popover',
   'popover_bg',
   'portion_learn',
