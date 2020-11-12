@@ -3,7 +3,7 @@ import * as path from 'path'
 import axios, { AxiosInstance } from 'axios'
 const svnCommands = require('node-svn-ultimate')
 import * as Colors from 'colors'
-import { svnUrlDataType } from './types'
+import { svnUrlDataType, certificateType } from './types'
 import * as inquirer from 'inquirer'
 const cheerio = require('cheerio')
 import cli from 'cli-ux'
@@ -32,7 +32,7 @@ const Header = {
   'Content-Type': 'application/json;charset=UTF-8'
 }
 
-const initClient = (site: string) => axios.create({
+const initClient = (site: certificateType) => axios.create({
   timeout: 10000,
   withCredentials: true,
   maxRedirects: 0,
@@ -47,7 +47,7 @@ function logAndExit(message: string, color = Colors.red) {
 }
 
 
-function getCertificate(site: string): {
+function getCertificate(site: certificateType): {
   certificate: string
 } {
   const confPath = site === "kejian" ? kejianPath : cookiePath
@@ -66,8 +66,8 @@ function getCertificate(site: string): {
   }
 }
 
-const saveCertificate = (str: string, certificateType: string): boolean => {
-  const confPath = certificateType === 'kejian' ? kejianPath : cookiePath
+const saveCertificate = (str: string, certificateTypeStr: certificateType): boolean => {
+  const confPath = certificateTypeStr === 'kejian' ? kejianPath : cookiePath
   try {
     fs.writeFileSync(confPath, str, 'utf8')
     return true

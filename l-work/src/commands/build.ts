@@ -4,7 +4,7 @@ import * as Colors from 'colors'
 import cli from 'cli-ux'
 const FindFiles = require('file-regex')
 
-const Client = initClient('token')
+const Client = initClient('kejian')
 
 export default class Build extends Command {
   static description = '用于构建课件,游戏.'

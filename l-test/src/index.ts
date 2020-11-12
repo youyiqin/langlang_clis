@@ -43,6 +43,7 @@ const validStartString = [
   'prev_icon',
   'pagination',
   'picture',
+  'picture_PATTERN',
   'popover',
   'popover_bg',
   'portion_learn',
@@ -92,7 +93,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
   content
     .split('\r\n').map((line, index) => {
       return {
-        lineIndex: index,
+        lineIndex: index + 1,
         lineContent: line
       }
     })
