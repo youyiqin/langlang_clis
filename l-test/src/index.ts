@@ -126,7 +126,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
           tempCount += 1
         }
         if (kv[0] === 'course_name' && tempCount <= 1) {
-          tempResult.onlineUrl = `http://s.langlangyun.com/c/index.html?name=${kv[1]}`
+          tempResult.onlineUrl = `http://s.langlangyun.com/${kv[1]}/index.html`
           tempCount += 1
         }
         // 检查是否有空的值
@@ -253,7 +253,7 @@ function echoCourseTable(data: checkResult[]): void {
   const tasksArr: any = []
   data.forEach(item => {
     tasksArr.push(
-      axios.get(`${item.onlineUrl.replace('c/index.html?name=', 'static/')}/course.json`)
+      axios.get(item.onlineUrl)
         .then((response) => {
           return response.status === 200
         })
@@ -314,7 +314,7 @@ function saveResult(data: checkResult[]) {
   })
   data.forEach(course => {
     let name = course.courseName + ' '.repeat(maxSizeOfName - byteLength(course.courseName))
-    fs.appendFileSync('course.txt', `${name}\t\t${course.onlineUrl}\n`)
+    fs.writeFileSync('course.txt', `${name}\t\t${course.onlineUrl}\n`)
   })
 }
 
@@ -339,7 +339,7 @@ class LTest extends Command {
     directory: flags.string({ char: 'd', description: 'course directiry, default is current directory' }),
     table: flags.boolean({ char: 't', description: '打印课程大纲,默认为不打印.' }),
     level: flags.string({ char: 'l', description: '查找文件的层级,默认查找2层.例如在当前目录下执行命令,可以对当前和当前目录下的文件内的course.conf进行测试.' }),
-    force: flags.boolean({ char: 'f', description: '强制执行,不提示,默认开启' }),
+    force: flags.string({ char: 'f', description: '强制执行,不提示,默认开启', default: 'true' }),
     out: flags.boolean({ char: 'o', description: '输出保存课程线上地址的txt文档,添加此标志即可保存结果在当前目录下的course.txt文件内' })
   }
 
@@ -348,9 +348,9 @@ class LTest extends Command {
     const currentDir = flags.directory ?? process.cwd()
     const printCourseTable = flags.table ?? false
     const depthLevel = flags.level ?? 2
-    const force = flags.force ?? true
+    const force = flags.force
     const out = flags.out ?? false
-    if (force) {
+    if (force === 'true') {
       this.log(colors.green(`检查${currentDir}下的所有course.conf文件.`))
     } else {
       this.log(colors.green(`检查${currentDir}下的所有course.conf文件?`))
