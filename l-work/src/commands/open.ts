@@ -56,7 +56,7 @@ export default class Build extends Command {
         .slice(courseNameIndex, courseNameIndex + 100)
         .split('\r\n')[0]
         .replace(/^.*=/, '')
-      const url = `http://s.langlangyun.com/c/index.html?name=${courseName}`
+      const url = `http://s.langlangyun.com/${courseName}/index.html`
       const statusUrl = `http://s.langlangyun.com/static/${courseName}/course.json`
       axios.get(statusUrl).then(async (response) => {
         if (response.status === 200) {
