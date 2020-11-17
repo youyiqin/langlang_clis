@@ -14,6 +14,7 @@ const validStartString = [
   'alias',
   'active',
   'audio[]',
+  'autoplay',
   'background',
   'background_color',
   'background_music',
@@ -102,7 +103,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
       const kv = line.lineContent.split('=')
       // 检查键值对之间是否有多余的空格
       kv.forEach(value => {
-        if (value.startsWith(' ') || value.endsWith(' ')) {
+        if (value.startsWith(' ') || value.endsWith(' ') && value.indexOf(',') === -1) {
           tempResult.noError = false
           tempResult.errorMsg.push({
             info: `line: ${line.lineIndex}: 字段左右存在空格`,
@@ -129,7 +130,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
           tempCount += 1
         }
         // 检查是否有空的值
-        if (kv[1] === "" || kv[1].indexOf(" ") !== -1) {
+        if (kv[1] === "" || kv[1].indexOf(" ") !== -1 && kv[1].indexOf(',') === -1) {
           tempResult.noError = false
           tempResult.errorMsg.push({
             info: `line: ${line.lineIndex}: 漏写值,或者值之间存在多余的空格`,
