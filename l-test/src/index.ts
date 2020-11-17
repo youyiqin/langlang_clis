@@ -191,6 +191,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
 /*
 * 1. pagination和backdrop共存
 * 2. tip_word不能用图片,应该用tip_image
+* 3. 游戏不能喝background共存
 */
 function ruleA(content: string, currentPath: string, tempResult: checkResult): checkResult {
   const tomlStr = content
@@ -214,6 +215,13 @@ function ruleA(content: string, currentPath: string, tempResult: checkResult): c
         tempResult.errorMsg.push({
           info: `${key}: 下的tip_word内容存在异常`,
           content: `tip_word=${element.tip_word}`
+        })
+      }
+      if (!!element.background && !!element.egret || !!element.h5 || !!element.cocos) {
+        tempResult.noError = false;
+        tempResult.errorMsg.push({
+          info: `${key}: 存在异常,游戏和background不可共存.`,
+          content: ""
         })
       }
     }
