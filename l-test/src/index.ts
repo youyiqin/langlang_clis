@@ -219,7 +219,7 @@ function ruleA(content: string, currentPath: string, tempResult: checkResult): c
           content: `tip_word=${element.tip_word}`
         })
       }
-      if (!!element.background && !!element.egret || !!element.h5 || !!element.cocos) {
+      if (!!element.background && (!!element.egret || !!element.h5 || !!element.cocos)) {
         tempResult.noError = false;
         tempResult.errorMsg.push({
           info: `${key}: 存在异常,游戏和background不可共存.`,
