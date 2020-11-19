@@ -38,6 +38,7 @@ const validStartString = [
   'no_video_control',
   'no_learn',
   'no_reload',
+  'note_PATTERN',
   'next_icon',
   'next_page_icon',
   'prev_page_icon',
