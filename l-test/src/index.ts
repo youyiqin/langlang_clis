@@ -50,6 +50,7 @@ const validStartString = [
   'portion_learn',
   'popover_close_icon',
   'video',
+  'video_control',
   'video_progress',
   'video_progress_position',
   'video_progress_style',
