@@ -17,7 +17,8 @@ export default class Build extends Command {
   ]
 
   static flags = {
-    path: flags.string({ char: 'p', description: '下载和构建项目目录的根地址,默认使用当前地址', default: process.cwd() })
+    path: flags.string({ char: 'p', description: '下载和构建项目目录的根地址,默认使用当前地址', default: process.cwd() }),
+    download: flags.boolean({ char: 'd', description: '默认为false,不下载附件.', default: false }),
   }
 
   static args = [{
@@ -30,6 +31,7 @@ export default class Build extends Command {
     const { args, flags } = this.parse(Build)
     const projectId = args.projectId
     const targetRootPath = flags.path
+    const isDownloadFile = flags.download
     const randomNum2TitleDir: { [name: string]: number } = {}
     let dircData: { [name: string]: string } = {}
     try {
@@ -70,6 +72,7 @@ export default class Build extends Command {
         createFileOrDire(path.join(fullDirectoryName, 'static', 'mp3'), 'directory')
         createFileOrDire(path.join(fullDirectoryName, 'course.conf'), 'file', `title=${title}\r\ncourse_name=_${pinyinTitle}\r\n`)
       })
+      if (!isDownloadFile) process.exit()
       // 下载每一小节的附件并且解压到此小节的拼音目录下
       // 下载任务使用promise.all处理
       const tasksArr: Promise<{ status: boolean, info: string, downloadUrl: string, fileName: string }>[] = []
