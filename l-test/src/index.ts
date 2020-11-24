@@ -35,6 +35,7 @@ const validStartString = [
   'learn_word',
   'menu',
   'menu_style',
+  'menu_type',
   'no_video_control',
   'no_learn',
   'no_reload',
@@ -69,6 +70,7 @@ const validStartString = [
   'title',
   'icon',
   'icon_active',
+  'icon_hover',
   'interactive',
   'is_button_bottom',
 ]
