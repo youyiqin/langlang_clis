@@ -174,7 +174,7 @@ const getAttachmentsDownloadAndDownloadFiles = (Client: AxiosInstance, url: stri
           })
           const responseLength = ~~response.headers['content-length']
 
-          const resultSavePath = path.join(savePath, downloadUrl.replace(/^.*?download\//, '').replace('/story', '') + saveFileName)
+          const resultSavePath = path.join(savePath, saveFileName)
           // 如果文件存在,但是是不完整的,小于服务器返回的大小,则重新下载.
           if (fs.existsSync(resultSavePath) && fs.statSync(resultSavePath)['size'] < responseLength) {
             // 先删除再下载

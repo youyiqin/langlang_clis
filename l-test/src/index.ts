@@ -44,6 +44,7 @@ const validStartString = [
   'prev_page_icon',
   'prev_icon',
   'pagination',
+  'page_btn_position',
   'picture',
   'popover',
   'popover_bg',

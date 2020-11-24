@@ -37,7 +37,7 @@ export default class Build extends Command {
       // $ 取主页的html数据
       const $ = cheerio.load(projectHomepageRes.data)
       const homepageTitle = $('span .project-name').text()
-      cli.action.start(Colors.green(`正在攻打${homepageTitle}, 多喝热水,等会再看`));
+      cli.action.start(Colors.green(`访问:${homepageTitle}, 多喝热水,等会再看`));
       const titleArr = $('tr')
         .filter(function (i: any, el: any) {
           // this == el
@@ -68,7 +68,7 @@ export default class Build extends Command {
         createFileOrDire(path.join(fullDirectoryName, 'static', 'picture', 'jiaoan'), 'directory')
         createFileOrDire(path.join(fullDirectoryName, 'static', 'json'), 'directory')
         createFileOrDire(path.join(fullDirectoryName, 'static', 'mp3'), 'directory')
-        createFileOrDire(path.join(fullDirectoryName, 'course.conf'), 'file', `title=${title}\r\ncourse_name=_${directoryName}\r\n`)
+        createFileOrDire(path.join(fullDirectoryName, 'course.conf'), 'file', `title=${title}\r\ncourse_name=_${pinyinTitle}\r\n`)
       })
       // 下载每一小节的附件并且解压到此小节的拼音目录下
       // 下载任务使用promise.all处理
