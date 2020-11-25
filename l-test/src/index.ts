@@ -48,6 +48,7 @@ const validStartString = [
   'pagination',
   'page_btn_position',
   'picture',
+  'params',
   'popover',
   'popover_bg',
   'portion_learn',
