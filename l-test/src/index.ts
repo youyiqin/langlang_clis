@@ -53,6 +53,7 @@ const validStartString = [
   'popover_close_icon',
   'video',
   'video_control',
+  'video_loop',
   'video_progress',
   'video_progress_position',
   'video_progress_style',
