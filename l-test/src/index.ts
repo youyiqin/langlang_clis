@@ -36,6 +36,7 @@ const validStartString = [
   'menu',
   'menu_style',
   'menu_type',
+  'note',
   'no_video_control',
   'no_learn',
   'no_reload',
@@ -183,12 +184,27 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
           'background',
           'backdrop',
           'jiaoan'
-        ].includes(kv[0]) && kv[1].indexOf('//') === -1 && kv[1].indexOf('*') === -1 && !(fs.existsSync(path.join(path.dirname(currentPath), kv[1])))) {
-          tempResult.noError = false
-          tempResult.errorMsg.push({
-            info: `line: ${line.lineIndex}: 配置值指向的文件不存在.`,
-            content: colors.yellow(line.lineContent)
-          })
+        ].includes(kv[0]) && kv[1].indexOf('//') === -1 && kv[1].indexOf('*') === -1) {
+          if (kv[1].indexOf('|') !== -1) {
+            if (!kv[1]
+              .split('|')
+              .every(item => {
+                const fullPath = item.replace(/\//, '').replace(/\//g, '\\')
+                return fs.existsSync(path.join(path.dirname(currentPath), fullPath))
+              })) {
+              tempResult.noError = false
+              tempResult.errorMsg.push({
+                info: `line: ${line.lineIndex}: 配置值指向的文件不存在.`,
+                content: colors.yellow(line.lineContent)
+              })
+            }
+          } else if (!(fs.existsSync(path.join(path.dirname(currentPath), kv[1])))) {
+            tempResult.noError = false
+            tempResult.errorMsg.push({
+              info: `line: ${line.lineIndex}: 配置值指向的文件不存在.`,
+              content: colors.yellow(line.lineContent)
+            })
+          }
         }
       }
     })
