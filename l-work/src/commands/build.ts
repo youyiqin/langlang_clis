@@ -50,12 +50,12 @@ export default class Build extends Command {
         }
         cli.action.start(Colors.white('预处理构建流程...'))
         // check conf
-        Client.post(`http://kejian.suboy.cn/cgi/auth/build/${svnData.buildType}/conf`, postData)
+        Client.post(`https://a.langlang.net.cn/api/proxy/build/${svnData.buildType}/conf`, postData)
           .then(async res => {
             if (res.data.code !== 0) {
               cli.action.stop()
               console.log('提示信息:', Colors.red(`${res.data.message},address:${svnData.url}`));
-              console.log(Colors.green('如果token失效,则重新从浏览器获取token,再运行 l-work init 命令初始化凭证.'));
+              console.log(Colors.green('如果cookie失效,则重新从浏览器获取cookie,再运行 l-work init 命令初始化凭证.'));
               return resolve({
                 status: false,
                 dir: svnData.url.slice(svnData.url.lastIndexOf('/') + 1)
@@ -68,7 +68,7 @@ export default class Build extends Command {
                 cli.action.stop()
               }
               // 配置检查没问题可以构建就构建,存在构建的目标不是想要的目标的可能,但是这个只能怪用的人...
-              Client.post(`http://kejian.suboy.cn/cgi/auth/build/${svnData.buildType}/start`, svnData.buildType === "course" ? postData : {
+              Client.post(`https://a.langlang.net.cn/api/proxy/build/${svnData.buildType}/start`, svnData.buildType === "course" ? postData : {
                 env,
                 url: svnData.url
               }).then(buildRes => {
