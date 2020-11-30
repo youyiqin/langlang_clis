@@ -234,7 +234,14 @@ function ruleA(content: string, currentPath: string, tempResult: checkResult): c
           content: ""
         })
       }
-      if (!!element.tip_word && element.tip_word.indexOf('/') !== -1) {
+      if (!!element.pagination && element.pagination == "true" && !!element.video && element.video.includes("|") && element?.video_progress == "true") {
+        tempResult.noError = false;
+        tempResult.errorMsg.push({
+          info: `${key}: 多个视频轮播的是不需要进度条.`,
+          content: ""
+        })
+      }
+      if (!!element.tip_word && element.tip_word.includes("/")) {
         tempResult.noError = false;
         tempResult.errorMsg.push({
           info: `${key}: 下的tip_word内容存在异常`,
