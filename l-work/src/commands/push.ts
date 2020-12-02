@@ -3,10 +3,9 @@ import { Command, flags } from '@oclif/command'
 import { getCertificate } from '../lib'
 // import * as inquirer from 'inquirer'
 import axios from 'axios'
-const assert = require('assert')
 
 export default class Push extends Command {
-  static description = '将当前目录下的项目的有效线上地址更新到TAPD的父目录评论区.'
+  static description = '上传视频资源到服务器,并且复制线上地址到粘贴板.'
 
   static examples = [
     `$ l-work push`,
@@ -28,3 +27,4 @@ export default class Push extends Command {
     })).catch(err => console.log(err))
   }
 }
+
