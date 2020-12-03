@@ -14,6 +14,7 @@ const validStartString = [
   'alias',
   'active',
   'audio[]',
+  'sound[]',
   'autoplay',
   'background',
   'background_color',
