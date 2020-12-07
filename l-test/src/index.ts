@@ -14,7 +14,6 @@ const validStartString = [
   'alias',
   'active',
   'audio[]',
-  'sound[]',
   'autoplay',
   'background',
   'background_color',
@@ -28,8 +27,10 @@ const validStartString = [
   'cocos',
   'cover',
   'egret',
+  'graphic_icon',
   'h5',
   'home_url',
+  'home_icon',
   'loading_image',
   'list_PATTERN',
   'literacy',
@@ -37,13 +38,20 @@ const validStartString = [
   'menu',
   'menu_style',
   'menu_type',
+  'music_icon',
+  'muted_icon',
+  'mode_image_icon',
+  'mode_ppt_icon',
   'note',
   'no_video_control',
   'no_learn',
   'no_reload',
   'note_PATTERN',
+  'note_icon',
   'next_icon',
   'next_page_icon',
+  'play_icon',
+  'pause_icon',
   'prev_page_icon',
   'prev_icon',
   'pagination',
@@ -64,12 +72,16 @@ const validStartString = [
   'video_progress_bottom',
   'video_progress_width',
   'video_poster',
+  'reload_icon',
+  'sound[]',
   'swiper_PATTERN',
   'swiper',
   'step',
   'simple',
   'scale',
+  'stroke_icon',
   'tip_word',
+  'tip_icon',
   'tip_sound',
   'tip_image',
   'title',
@@ -201,7 +213,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
                 content: colors.yellow(line.lineContent)
               })
             }
-          } else if (!(fs.existsSync(path.join(path.dirname(currentPath), kv[1])))) {
+          } else if (kv[1].startsWith('/') && !(fs.existsSync(path.join(path.dirname(currentPath), kv[1])))) {
             tempResult.noError = false
             tempResult.errorMsg.push({
               info: `line: ${line.lineIndex}: 配置值指向的文件不存在.`,
@@ -283,7 +295,11 @@ function getAllCourseConfAndErrorMsg(courseDirInfo: courseDir): checkResult[] {
   return courseDirInfo
     .map((dirInfo) => {
       const currentPath = path.join(dirInfo.dir, dirInfo.file);
-      const content = fs.readFileSync(currentPath, 'utf8')
+      // 彻底消除多个 sound[]= 的配置
+      const content = fs.readFileSync(currentPath, 'utf8').replace(/sound\[\]\=.*\r\n/g, '')
+      // nodejs doesn't support'
+      // console.log(content.replaceAll('[]=', '='));
+
       return check(content, currentPath)
     })
 }
