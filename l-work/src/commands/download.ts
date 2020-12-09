@@ -19,6 +19,7 @@ export default class Build extends Command {
   static flags = {
     path: flags.string({ char: 'p', description: '下载和构建项目目录的根地址,默认使用当前地址', default: process.cwd() }),
     download: flags.boolean({ char: 'd', description: '默认为false,不下载附件.', default: false }),
+    level: flags.string({ char: 'l', description: '标题的level级别，默认是0，有些奇奇怪怪的课程系列会不太一样，比如思维游戏就是1.', default: '0' })
   }
 
   static args = [{
@@ -29,6 +30,7 @@ export default class Build extends Command {
 
   async run() {
     const { args, flags } = this.parse(Build)
+    const level = flags.level
     const projectId = args.projectId
     const targetRootPath = flags.path
     const isDownloadFile = flags.download
@@ -44,11 +46,11 @@ export default class Build extends Command {
         .filter(function (i: any, el: any) {
           // this == el
           return $(el)
-            .attr('level') === '0'
+            .attr('level') === level
         })
       titleArr.map((_: any, e: any) => {
         const title = $(e).find('.name-td')
-          .attr('data-editable-value') || 'unknown'
+          .attr('data-editable-value').replace(/ /g, '') || 'unknown'
         let pinyinTitle = pinyin.convertToPinyin(title, '', true).replace(/[^a-zA-Z0-9]/g, '')
         let directoryName;
         // 直接读取目标目录,按拼音获取对应的旧目录,避免创建新目录
