@@ -35,6 +35,7 @@ const validStartString = [
   'list_PATTERN',
   'literacy',
   'learn_word',
+  'layout',
   'menu',
   'menu_style',
   'menu_type',
