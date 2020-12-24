@@ -1,0 +1,50 @@
+{
+	"groups": [
+		{
+			"keys": "description_json,sound_right_mp3,sound_wrong_mp3,sound_taibangle_mp3,taibangle_json,taibangle_png,gxgg2_json,gxgg2_png",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"name": "description_json",
+			"type": "json",
+			"url": "config/description.json"
+		},
+		{
+			"name": "sound_right_mp3",
+			"type": "sound",
+			"url": "mp3/sound_right.mp3"
+		},
+		{
+			"name": "sound_wrong_mp3",
+			"type": "sound",
+			"url": "mp3/sound_wrong.mp3"
+		},
+		{
+			"name": "sound_taibangle_mp3",
+			"type": "sound",
+			"url": "mp3/sound_taibangle.mp3"
+		},
+		{
+			"name": "taibangle_json",
+			"type": "json",
+			"url": "mc/taibangle.json"
+		},
+		{
+			"name": "taibangle_png",
+			"type": "image",
+			"url": "mc/taibangle.png"
+		},
+		{
+			"name": "gxgg2_json",
+			"type": "json",
+			"url": "mc/gxgg2.json"
+		},
+		{
+			"name": "gxgg2_png",
+			"type": "image",
+			"url": "mc/gxgg2.png"
+		}
+	]
+}

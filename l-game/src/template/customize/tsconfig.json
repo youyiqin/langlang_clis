@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "outDir": "bin-debug",
+        "experimentalDecorators": true,
+        "lib": [
+            "es7",
+            "es5",
+            "es6",
+            "dom",
+            "es2015.promise"
+        ],
+        "types": []
+    },
+    "include": [
+        "src",
+        "libs"
+    ]
+}

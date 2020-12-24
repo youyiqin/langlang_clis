@@ -17,9 +17,10 @@ class Lanhu extends Command {
     const clipboardContent = Clipboardy.readSync()
     try {
       const jsonData = JSON.parse(clipboardContent)
-      const mainInfo = jsonData.info.filter((item: any) => {
-        return item.type === 'layerSection' && !(['kuang', 'fanhui', 'jiaoan', 'huanjie', 'chongwan', 'bjjian1', 'bjjian2', 'wenhao'].some(i => i === item.name))
-      })
+      const mainInfo = jsonData.info
+        .filter((item: any) => {
+          return item.type === 'layerSection' && !(['kuang', 'fanhui', 'jiaoan', 'huanjie', 'chongwan', 'bjjian1', 'bjjian2', 'wenhao', 'next', 'tanhuijian2', 'last'].some(i => i === item.name))
+        })
         .map((item: any) => {
           const pinyinName = pinyin.convertToPinyin(item.name, '', true).replace(/ /g, '')
           return {

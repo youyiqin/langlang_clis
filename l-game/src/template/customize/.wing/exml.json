@@ -1,0 +1,30 @@
+{
+    "17129f5c9af": {
+        "path": "..\\resource\\eui_skins\\child.ts",
+        "class": "child",
+        "parentPath": ""
+    },
+    "172128613fc": {
+        "path": "..\\resource\\eui_skins\\Girl.ts",
+        "class": "Girl",
+        "parentPath": ""
+    },
+    "global": {
+        "globalAdsorbEnable": true,
+        "globalAutoLayerMarkEnable": true
+    },
+    "1740558b2c3": {
+        "backgroundX": 0,
+        "backgroundY": 0,
+        "backgroundWidth": -1,
+        "backgroundHeight": -1,
+        "useBgImage": true,
+        "useBgColor": true,
+        "backgroundAlpha": 100
+    },
+    "1740a7dceea": {
+        "path": "games\\Game1.ts",
+        "class": "Game1",
+        "parentPath": ""
+    }
+}
