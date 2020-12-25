@@ -92,32 +92,34 @@ class Main extends eui.UILayer {
    * Create scene interface
    */
   protected createGameScene(): void {
+    const root = this
     // 场景
     SceneManager.Instance.rootLayer = this; // 将this 定为起始场景
     const game = new Game();
     SceneManager.Instance.changeScene(game);
+
+    function reset() {
+      // 移除事件
+      EventManager.removeEvent("reset", this.resetGame, root);
+      // 移除音频 解决：第一次移除之后无法播放提示音的问题
+      GameUtil.clearChannel();
+      // 移除页面的元素
+      while (root.numChildren > 0) {
+        const item = root.removeChildAt(0);
+        typeof item["Dispose"] == "function" && item["Dispose"]();
+      }
+      // 移除所有的动画
+      egret.Tween.removeAllTweens();
+      // 重新加载界面
+      root.createGameScene();
+    }
 
     // 派发一个事件
     // EgretGameApi.reset = () => {
     //   EventManager.emitEvent("reset");
     // }
     // 侦听这个事件
-    EventManager.onEvent("reset", this.resetGame, this);
-  }
-
-  resetGame(): void {
-    // 移除事件
-    EventManager.removeEvent("reset", this.resetGame, this);
-    // 移除音频 解决：第一次移除之后无法播放提示音的问题
-    GameUtil.clearChannel();
-    // 移除页面的元素
-    while (this.numChildren > 0) {
-      const item = this.removeChildAt(0);
-      typeof item["Dispose"] == "function" && item["Dispose"]();
-    }
-    // 移除所有的动画
-    egret.Tween.removeAllTweens();
-    // 重新加载界面
-    this.createGameScene();
+    EventManager.onEvent("reset", reset, this);
+    EgretGameApi.reset = reset
   }
 }
