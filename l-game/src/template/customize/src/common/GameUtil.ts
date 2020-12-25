@@ -19,7 +19,9 @@ class GameUtil {
     return channel
   }
   // 动画
-  static initGif(param) {
+  static initGif(param: {
+    json: string, img: string, x: number, y: number, playName?: string, name?: string
+  }) {
     const data = RES.getRes(param.json);
     const txtr = RES.getRes(param.img);
     let mcFanctory: egret.MovieClipDataFactory = new egret.MovieClipDataFactory(data, txtr);
