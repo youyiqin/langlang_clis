@@ -13,7 +13,7 @@ export default class Time extends Command {
     const targetString = clipboardy.readSync()
     const result = targetString.split('\r\n')
       .filter((line: string) => line.endsWith('s'))
-      .map((line: string) => line.match(/([0-9.]+)s$/)[1])
+      .map((line: string) => line.replace(/s/g, '').match(/([0-9.]+)$/)[1])
     console.log(result);
     clipboardy.writeSync(`[${[0, ...result]}]`)
   }
