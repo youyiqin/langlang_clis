@@ -1,3 +1,4 @@
+// authors: qinyouyi,hexuchao
 class Help {
   // 管道,从左到右执行.只传一个参数,执行第一个函数,结果传入后续的函数.
   static pipe = (...fns) => <T>(T) => fns.reduce((acc, fn) => fn(acc), T);
@@ -30,6 +31,9 @@ class Help {
   static customizeEgretApi(api: 'report' | 'openVideo', argu: any): void {
     EgretGameApi && EgretGameApi[api] && EgretGameApi[api](argu)
   }
+
+
+  // 不再推荐使用隐式的改变属性方案
   // 反转图片或者帧动画的touchEnabled属性
   static reverseTargetTouchEnabled(target: eui.Image | egret.MovieClip, callbackFn?: () => void) {
     try {
@@ -41,8 +45,15 @@ class Help {
       return target
     }
   }
+  // 显示指定touchEnabled或者visiable
+  static enabled(target: egret.DisplayObject, attr: 'touchEnabled' | 'visible') {
+    target[`${attr}`] = true
+  }
+  static disenabled(target: egret.DisplayObject, attr: 'touchEnabled' | 'visible') {
+    target[`${attr}`] = false
+  }
   // 缩放图片或者帧动画,提供一个默认实现,也可以传参数进行自定义
-  static zoomIt(target: eui.Image | egret.MovieClip, attr?: {
+  static zoomIt(target: egret.DisplayObject, attr?: {
     size: number
     time: number,
     style: Function,
@@ -77,7 +88,7 @@ class Help {
   }
 
   // 设置图片或者帧动画的锚点到物体的中心,方便原地缩放和旋转等等操作.
-  static setCenterAnchorOffset(target: eui.Image | egret.MovieClip | egret.Shape) {
+  static setCenterAnchorOffset(target: egret.DisplayObject) {
     target.anchorOffsetX = target.width / 2;
     target.x += target.width / 2;
     target.anchorOffsetY = target.height / 2;
