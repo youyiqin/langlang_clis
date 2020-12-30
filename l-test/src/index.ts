@@ -113,8 +113,8 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
   // 获取首个title和course_name的值就行了,作为阀值
   let tempCount = 0
 
-  content
-    .split('\r\n').map((line, index) => {
+  content.replace(/\\r/g, '')
+    .split('\n').map((line, index) => {
       return {
         lineIndex: index + 1,
         lineContent: line
@@ -160,7 +160,6 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
             content: colors.yellow(line.lineContent)
           })
         }
-
         if (kv[0] === "")
           // 检查键值对组合
           if (!([
@@ -234,10 +233,10 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
 */
 function ruleA(content: string, currentPath: string, tempResult: checkResult): checkResult {
   const tomlStr = content
-    .split('\r\n')
+    .split('\n')
     .filter(item => !(item.startsWith('#') || item === '' || item.startsWith('audio')))
     .map(item => item.replace(/=(.*)/, '=\"$1\"'))
-    .join('\r\n')
+    .join('\n')
   const data = toml.parse(tomlStr);
   for (const key in data) {
     if (Object.prototype.hasOwnProperty.call(data, key)) {
