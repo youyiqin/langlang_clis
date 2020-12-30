@@ -88,4 +88,35 @@ class Help {
   static rangeOnTarget(target: any, length: number, keyword: string, from: number = 0) {
     return Array.from({ length }, (_, i) => target[`${keyword}${i + from}`])
   }
+
+  // 图片本地缩放过度,然后旋转缩小消失,闪烁到新的位置旋转恢复
+  static flashAndRotating(target: eui.Image, dstX: number, dstY: number, time = 333, scale = 0, rotation = 1080, callbackFn?: Function) {
+    egret.Tween.get(target)
+      .to({
+        scaleX: 0.85,
+        scaleY: 0.85
+      }, 333, egret.Ease.sineOut)
+      .to({
+        scaleX: 1.2,
+        scaleY: 1.2
+      }, 333, egret.Ease.sineIn)
+      .wait(300)
+      .to({
+        scaleX: scale,
+        scaleY: scale,
+        rotation,
+      }, time, egret.Ease.sineInOut)
+      .to({
+        x: dstX,
+        y: dstY
+      })
+      .to({
+        scaleX: 1,
+        scaleY: 1,
+        rotation
+      }, time, egret.Ease.sineOut)
+      .call(() => {
+        callbackFn && callbackFn()
+      })
+  }
 }
