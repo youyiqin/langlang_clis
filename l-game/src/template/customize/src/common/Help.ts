@@ -27,7 +27,11 @@ class Help {
       return result
     }
   }
-  // 方便调用egretGameApi
+  /**
+  *   方便调用egretGameApi
+  *   success / mistake / url
+  */
+
   static customizeEgretApi(api: 'report' | 'openVideo', argu: any): void {
     EgretGameApi && EgretGameApi[api] && EgretGameApi[api](argu)
   }
