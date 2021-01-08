@@ -18,6 +18,7 @@
     "clipboardy": "^2.3.0",
     "colors": "^1.4.0",
     "file-regex": "^3.1.0",
+    "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
     "lowdb": "^1.0.0",
     "node-svn-ultimate": "^1.2.1",
