@@ -32,6 +32,13 @@ class Help {
     EgretGameApi && EgretGameApi[api] && EgretGameApi[api](argu)
   }
 
+  // 缓动动画简单封装
+  static tween(target: any, options: Object, toObj: Object, duration: number, ease: (number) => number, callbackFn?: Function) {
+    egret.Tween.get(target, options)
+      .to(toObj, duration, ease).call(() => {
+        callbackFn && callbackFn()
+      })
+  }
 
   // 不再推荐使用隐式的改变属性方案
   // 反转图片或者帧动画的touchEnabled属性
