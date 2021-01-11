@@ -27,11 +27,25 @@ class Help {
       return result
     }
   }
+
+  /**
+   * obj: 对象
+   * return： 对象值的数组形式
+   */
+  static values(obj: Object) {
+    let val = [];
+    for (let key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        val.push(obj[key]);
+      }
+    }
+    return val;
+  }
+
   /**
   *   方便调用egretGameApi
   *   success / mistake / url
   */
-
   static customizeEgretApi(api: 'report' | 'openVideo', argu: any): void {
     EgretGameApi && EgretGameApi[api] && EgretGameApi[api](argu)
   }
@@ -62,6 +76,37 @@ class Help {
   }
   static disEnabled(target: egret.DisplayObject, attr: 'touchEnabled' | 'visible') {
     target[`${attr}`] = false
+  }
+  // 更明确的函数
+  static touchEnabled(target: any) {
+    target.touchEnabled = true
+  }
+  static disTouchEnabled(target: any) {
+    target.touchEnabled = false
+  }
+  static visible(target: any) {
+    target.visible = true
+  }
+  static disVisible(target: any) {
+    target.visible = false
+  }
+  static alpha1(target: any) {
+    target.alpha = 1
+  }
+  static alpha0(target: any) {
+    target.alpha = 0
+  }
+  static visible_3(target: any) {
+    Help.tween(target, {}, { visible: true }, 333, egret.Ease.sineInOut)
+  }
+  static disVisible_3(target: any) {
+    Help.tween(target, {}, { visible: false }, 333, egret.Ease.sineInOut)
+  }
+  static alpha1_3(target: any) {
+    Help.tween(target, {}, { alpha: 1 }, 333, egret.Ease.sineInOut)
+  }
+  static alpha0_3(target: any) {
+    Help.tween(target, {}, { alpha: 0 }, 333, egret.Ease.sineInOut)
   }
   // 缩放图片或者帧动画,提供一个默认实现,也可以传参数进行自定义
   static zoomIt(target: egret.DisplayObject, loop = false, attr?: {
