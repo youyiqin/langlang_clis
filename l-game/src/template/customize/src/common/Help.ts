@@ -245,7 +245,9 @@ class Help {
     }
   }
 
-  // 常用帧动画,传一个父级对象,用于 addChild ,最终返回此帧动画对象,默认 visible = false
+  /**
+   * 常用帧动画,传一个父级对象,用于 addChild ,最终返回此帧动画对象,默认 visible = false
+   */
   static initGif(basicFrameInfoObj: { json: string, img: string, x: number, y: number }, parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
     const Gif = GameUtil.initGif(basicFrameInfoObj)
     parentDisplayObj.addChild(Gif)
