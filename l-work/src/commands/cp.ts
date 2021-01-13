@@ -3,10 +3,10 @@ const fse = require('fs-extra')
 const fs = require('fs')
 
 export default class Cp extends Command {
-  static description = '专用于复制课件基础结构和course.conf文件'
+  static description = '专用于复制课件基础结构和course.conf文件, 删除了不通用的mp4和图片素材等.'
 
   static examples = [
-    `$ l-work cp`,
+    `$ l-work cp folderA newFolderB`,
   ]
 
   static args = [

@@ -63,7 +63,7 @@ export default class Build extends Command {
             } else {
               // 别太快,如果是构建多个目标,间歇性等待一秒钟
               if ((index + 1) % 3 === 0) {
-                cli.action.start('暂停等待几秒钟,太快服务器容易莫名其妙返回异常.');
+                cli.action.start('Waiting');
                 await cli.wait(5000)
                 cli.action.stop()
               }
