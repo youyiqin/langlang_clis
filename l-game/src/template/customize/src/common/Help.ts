@@ -100,17 +100,18 @@ class Help {
   static alpha0(target: any) {
     target.alpha = 0
   }
-  static visible_3(target: any) {
-    Help.tween(target, {}, { visible: true }, 333, egret.Ease.sineInOut)
+  static visible_3(target: any, callbackFn?: Function) {
+    Help.tween(target, {}, { visible: true }, 333, egret.Ease.sineInOut, callbackFn)
+
   }
-  static disVisible_3(target: any) {
-    Help.tween(target, {}, { visible: false }, 333, egret.Ease.sineInOut)
+  static disVisible_3(target: any, callbackFn?: Function) {
+    Help.tween(target, {}, { visible: false }, 333, egret.Ease.sineInOut, callbackFn)
   }
-  static alpha1_3(target: any) {
-    Help.tween(target, {}, { alpha: 1 }, 333, egret.Ease.sineInOut)
+  static alpha1_3(target: any, callbackFn?: Function) {
+    Help.tween(target, {}, { alpha: 1 }, 333, egret.Ease.sineInOut, callbackFn)
   }
-  static alpha0_3(target: any) {
-    Help.tween(target, {}, { alpha: 0 }, 333, egret.Ease.sineInOut)
+  static alpha0_3(target: any, callbackFn?: Function) {
+    Help.tween(target, {}, { alpha: 0 }, 333, egret.Ease.sineInOut, callbackFn)
   }
   // 缩放图片或者帧动画,提供一个默认实现,也可以传参数进行自定义
   static zoomIt(target: egret.DisplayObject, loop = false, attr?: {
