@@ -12,9 +12,10 @@ class GameUtil {
   }
 
   // 播放声音
-  static playSound(sound: string) {
+  static playSound(sound: string, isClearChannelList?: boolean, isLoop?: false) {
     let playSound: egret.Sound = RES.getRes(sound);
-    let channel: egret.SoundChannel = playSound.play(0, 1);
+    isClearChannelList && GameUtil.clearChannel();
+    let channel: egret.SoundChannel = playSound.play(0, isLoop ? -1 : 1);
     GameUtil.channelList.push(channel);
     return channel
   }

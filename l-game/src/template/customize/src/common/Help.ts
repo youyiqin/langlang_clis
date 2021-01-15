@@ -50,7 +50,11 @@ class Help {
     EgretGameApi && EgretGameApi[api] && EgretGameApi[api](argu)
   }
 
-  // 缓动动画简单封装
+
+  /**
+   * 缓动动画简单封装
+   * options 对象用于loop循环,跟默认Tween一致
+   */
   static tween(target: any, options: Object, toObj: Object, duration: number, ease: (number) => number, callbackFn?: Function) {
     egret.Tween.get(target, options)
       .to(toObj, duration, ease).call(() => {
@@ -278,5 +282,19 @@ class Help {
       x: 520,
       y: 100,
     }, parentDisplayObj, completeCbFn, isOnce)
+  }
+
+  /**
+   * min: min数字
+   * max: max数字
+   * return: 从给定范围内返回一个整数
+   */
+  static randomInt(min = 0, max: number) {
+    if (max && max <= 0) {
+      throw Error('不合适的 end 参数.')
+    }
+    const randomValue = Math.random().toFixed(1)
+    if (randomValue)
+      return ~~(Math.random() * max)
   }
 }
