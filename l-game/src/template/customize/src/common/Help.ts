@@ -285,16 +285,17 @@ class Help {
   }
 
   /**
-   * min: min数字
-   * max: max数字
-   * return: 从给定范围内返回一个整数
+   * 默认正确音效
    */
-  static randomInt(min = 0, max: number) {
-    if (max && max <= 0) {
-      throw Error('不合适的 end 参数.')
-    }
-    const randomValue = Math.random().toFixed(1)
-    if (randomValue)
-      return ~~(Math.random() * max)
+  static PlayRightSound(isClearOther = false) {
+    GameUtil.playSound('sound_right_mp3', isClearOther)
   }
+
+  /**
+   * 默认错误音效
+   */
+  static PlayWrongSound(isClearOther = false) {
+    GameUtil.playSound('sound_wrong_mp3', isClearOther)
+  }
+
 }
