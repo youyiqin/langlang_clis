@@ -113,7 +113,7 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
   // 获取首个title和course_name的值就行了,作为阀值
   let tempCount = 0
 
-  content.replace(/\\r/g, '')
+  content.replace(/\\r\\n/g, '')
     .split('\n').map((line, index) => {
       return {
         lineIndex: index + 1,
@@ -233,10 +233,10 @@ function defaultCheckRule(content: string, currentPath: string, tempResult: chec
 */
 function ruleA(content: string, currentPath: string, tempResult: checkResult): checkResult {
   const tomlStr = content
-    .split('\n')
+    .split('\r\n')
     .filter(item => !(item.startsWith('#') || item === '' || item.startsWith('audio')))
     .map(item => item.replace(/=(.*)/, '=\"$1\"'))
-    .join('\n')
+    .join('\r\n')
   const data = toml.parse(tomlStr);
   for (const key in data) {
     if (Object.prototype.hasOwnProperty.call(data, key)) {
