@@ -13,7 +13,8 @@ const globalAny: any = global
  */
 export default function defaultRule(objArr: { line: number, content: string }[]) {
   let scopeKeysArr: string[] = [];
-  objArr.slice(0, 80).forEach((i) => {
+  console.log(colors.magenta('Start...'));
+  objArr.forEach((i) => {
     // 不是空行和分段部分,就测试
     if (i.content !== '') {
       const key = i.content.split('=')[0]?.trim()
@@ -46,5 +47,6 @@ export default function defaultRule(objArr: { line: number, content: string }[])
         scopeKeysArr.push(key)
       }
     }
-  })
+  });
+  console.log(colors.magenta('End...'));
 }
