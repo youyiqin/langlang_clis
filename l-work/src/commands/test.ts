@@ -1,13 +1,10 @@
 import { Command, flags } from '@oclif/command'
 import testObj from '../lib/testObj'
 const globalAny: any = global
-
-// const path = require('path')
 import * as path from 'path';
 import * as fs from 'fs';
 import defaultRule from '../lib/rules/default'
 const fsPromise = fs.promises;
-const fse = require('fs-extra')
 
 export default class Test extends Command {
   static description = '用于对课件配置文件进行测试.本来打算对多个项目进行测试,结果发现可以配合 powershell 或者 bash 命令直接搞定,就不写了.'

@@ -19,7 +19,7 @@ const testObj: Test = {
     return this.of()
   },
   toString() {
-    this.content.split('\r\n').forEach(i => console.log(i))
+    this.content.split('\n').forEach(i => console.log(i))
     return this.of()
   },
   checkObj: []

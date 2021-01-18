@@ -19,31 +19,34 @@ export default function defaultRule(objArr: { line: number, content: string }[])
     if (i.content !== '') {
       const key = i.content.split('=')[0]?.trim()
       const value = i.content.split('=')[1]?.trim()
+
       if (/^\[.*\]$/.test(i.content)) {
         scopeKeysArr.length = 0
       } else {
-        if (value === '') {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} need a value.\n`));
+        if (value === undefined || key === undefined) {
+          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(`${key}:${value}`))} someone can not be undefiled.\n`));
+        } else {
+          if (!validStartString.includes(key)) {
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is invalid.\n`));
+          }
+          if (scopeKeysArr.includes(key)) {
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is repeat.\n`));
+          }
+          if (value.includes(' ') || key.includes(' ')) {
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} has redundant space.\n`));
+          }
+          if (!isAValidAddr(value, globalAny.target)) {
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} is not exist.\n`));
+          }
+          const { status, info } = isHasConflictKey(key, scopeKeysArr)
+          if (status) {
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} can not exist with some other conflict key.Such as: ${colors.underline(colors.green(info))}.\n`));
+          }
+          if (!isValidOptionsValue) {
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} is invalid.\n`));
+          }
         }
-        if (!validStartString.includes(key)) {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is invalid.\n`));
-        }
-        if (scopeKeysArr.includes(key)) {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is repeat.\n`));
-        }
-        if (value.includes(' ') || key.includes(' ')) {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} has redundant space.\n`));
-        }
-        if (!isAValidAddr(value, globalAny.target)) {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} is not exist.\n`));
-        }
-        const { status, info } = isHasConflictKey(key, scopeKeysArr)
-        if (status) {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} can not exist with some other conflict key.Such as: ${colors.underline(colors.green(info))}.\n`));
-        }
-        if (!isValidOptionsValue) {
-          console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} is invalid.\n`));
-        }
+
         scopeKeysArr.push(key)
       }
     }

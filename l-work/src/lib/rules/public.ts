@@ -93,7 +93,7 @@ export const validStartString = [
  * @param str 传入原始文件内容,拆分成一个包含单行字符串和行号的对象,如果单行内容是注释或者空行,则设置内容为空
  */
 export const getLineObj = (str: string) => {
-  return str.split('\r\n').map((e, i) => {
+  return str.split('\n').map((e, i) => {
     return {
       content: e.startsWith('#') || /^\s+$/.test(e) ? '' : e,
       line: i + 1
@@ -107,6 +107,7 @@ export const getLineObj = (str: string) => {
 export const isAValidAddr = (addr: string, parentFolder: string) => {
   let isNeedCheck = false;
   ['mp4', 'mp3', 'jpg', 'png', 'json'].some(item => {
+
     if (!addr.startsWith('//') && !addr.includes('*') && addr.endsWith(`.${item}`)) {
       isNeedCheck = true
     }
