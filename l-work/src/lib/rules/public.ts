@@ -108,7 +108,7 @@ export const isAValidAddr = (addr: string, parentFolder: string) => {
   let isNeedCheck = false;
   ['mp4', 'mp3', 'jpg', 'png', 'json'].some(item => {
 
-    if (!addr.startsWith('//') && !addr.includes('*') && addr.endsWith(`.${item}`)) {
+    if (!addr.startsWith('//') && !addr.includes('*') && addr.endsWith(`.${item}`) && !addr.includes('|')) {
       isNeedCheck = true
     }
     return isNeedCheck

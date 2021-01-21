@@ -113,6 +113,45 @@ class Help {
   static alpha0_3(target: any, callbackFn?: Function) {
     Help.tween(target, {}, { alpha: 0 }, 333, egret.Ease.sineInOut, callbackFn)
   }
+
+  /**
+   * 数组成员全体操作
+   */
+  static actionForAll(arr: egret.DisplayObject[], action: Function) {
+    arr.forEach(i => {
+      action(i)
+    })
+  }
+  /**
+   * 全部disTouchenabled
+   */
+  static disTouchEnabledAll(arr: egret.DisplayObject[]) {
+    Help.actionForAll(arr, Help.disTouchEnabled);
+  }
+
+  /**
+  * 全部touchenabled
+  */
+  static touchEnabledAll(arr: egret.DisplayObject[]) {
+    Help.actionForAll(arr, Help.touchEnabled);
+  }
+
+  /**
+   * 全部disVisible
+   */
+  static disVisibleAll(arr: egret.DisplayObject[]) {
+    Help.actionForAll(arr, Help.disVisible);
+  }
+
+  /**
+  * 全部visible
+  */
+  static visibleAll(arr: egret.DisplayObject[]) {
+    Help.actionForAll(arr, Help.visible);
+  }
+
+
+
   // 缩放图片或者帧动画,提供一个默认实现,也可以传参数进行自定义
   static zoomIt(target: egret.DisplayObject, loop = false, attr?: {
     size: number
@@ -155,8 +194,11 @@ class Help {
     target.anchorOffsetY = target.height / 2;
     target.y += target.height / 2;
   }
-  // 例如图片有 tu1~tu10
-  // 可以 rangeOnTarget(this, 10, 'tu', 1) 得到 [tu1, tu2....tu10] 的数组
+
+  /**
+   * 例如图片有 tu1~tu10 
+   * 可以 rangeOnTarget(this, 10, 'tu', 1) 得到 [tu1, tu2....tu10] 的数组
+   */
   static rangeOnTarget(target: any, length: number, keyword: string, from: number = 0): any[] {
     return Array.from({ length }, (_, i) => target[`${keyword}${i + from}`])
   }

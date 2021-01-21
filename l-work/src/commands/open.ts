@@ -54,7 +54,7 @@ export default class Build extends Command {
       }
       const courseName = content
         .slice(courseNameIndex, courseNameIndex + 100)
-        .split('\r\n')[0]
+        .split('\n')[0]
         .replace(/^.*=/, '')
       const url = `http://s.langlangyun.com/${courseName}/index.html`
       const statusUrl = `http://s.langlangyun.com/static/${courseName}/course.json`
