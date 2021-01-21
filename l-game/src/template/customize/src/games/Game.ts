@@ -6,6 +6,8 @@ class Game extends eui.Component implements eui.UIComponent {
   // with id
   // public bj: eui.Image;
 
+  // customize varivales
+
   protected partAdded(partName: string, instance: any): void {
     super.partAdded(partName, instance);
   }
