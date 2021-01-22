@@ -36,7 +36,7 @@ export default class Test extends Command {
       const content = await fsPromise.readFile(path.resolve(target, 'course.conf'), 'utf8')
       // 后续增加规则,可以继续使用 .check(fn) 进行挂载
       testObj
-        .setCheckObj(content)
+        .setCheckObj(content.replace(/\\r/g, ''))
         .check(defaultRule)
     } else {
       console.log('请进入单独项目进行测试,或者使用组合Unix或者powershell命令进行测试.');

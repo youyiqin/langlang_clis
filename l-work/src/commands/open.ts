@@ -27,9 +27,8 @@ export default class Build extends Command {
 
   async run() {
     const { args } = this.parse(Build)
-
     // 指定一个目录,默认当前目录
-    const targetPath = path.resolve(args.path)
+    const targetPath = path.resolve(args.path.startsWith('.\\') ? path.join(process.cwd(), args.path) : args.path)
 
     // 直接在数据库中查询看看
     const dbData = db.get('paths').value()
@@ -56,6 +55,7 @@ export default class Build extends Command {
         .slice(courseNameIndex, courseNameIndex + 100)
         .split('\n')[0]
         .replace(/^.*=/, '')
+        .replace('\r', '')
       const url = `http://s.langlangyun.com/${courseName}/index.html`
       const statusUrl = `http://s.langlangyun.com/static/${courseName}/course.json`
       axios.get(statusUrl).then(async (response) => {
@@ -73,7 +73,7 @@ export default class Build extends Command {
           logAndExit('异常, 响应为:' + response?.data ?? '空');
         }
       }).catch(_ => {
-        logAndExit('暂未构建线上地址')
+        logAndExit(`${_.message}, 暂未构建.`)
       })
       // cli.open(url)
     } else if (fs.existsSync(path.join(targetPath, 'course.json'))) {
