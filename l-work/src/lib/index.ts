@@ -7,6 +7,8 @@ import { svnUrlDataType, certificateType } from './types'
 import * as inquirer from 'inquirer'
 const cheerio = require('cheerio')
 import cli from 'cli-ux'
+import { resolve } from 'dns'
+import { rejects } from 'assert'
 
 // const low = require('lowdb')
 // const FileSync = require('lowdb/adapters/FileSync')
@@ -305,5 +307,50 @@ const chooseBuildOption = async (result: any[]): Promise<string[]> => {
   })
 }
 
+const getCourseBasicInfo = async (content: string): Promise<{ status: boolean, url: string, title: string }> => {
+  let title: string, url: string;
+  return new Promise(async (resolve, rejects) => {
+    content
+      .replace(/\\r/g, '')
+      .split('\n')
+      .forEach(lineString => {
+        if (!title || !url) {
+          if (lineString.startsWith('title=')) {
+            title = lineString.replace('title=', '')
+          }
+          if (lineString.startsWith('course_name=')) {
+            url = `http://s.langlangyun.com/${lineString.replace('course_name=', '')}/`
+          }
+        }
+      })
+
+    // 得到title
+    if (title && url) {
+      const isExistCourseOnline = await getUrlStatus(url)
+      resolve({
+        status: isExistCourseOnline,
+        url,
+        title
+      })
+    } else {
+      rejects({
+        status: false,
+        url: '',
+        title: ''
+      })
+    }
+  })
+}
+
+const getUrlStatus = async (url: string) => {
+  try {
+    const resp = await axios.get(url)
+    return resp.status === 200
+  } catch (error) {
+    return false
+  }
+}
+
+
 export default initClient
-export { saveCertificate, getCertificate, logError, getSvnUrl, createFileOrDire, getAttachmentsDownloadAndDownloadFiles, chooseBuildOption, logAndExit }
+export { saveCertificate, getCertificate, logError, getSvnUrl, createFileOrDire, getAttachmentsDownloadAndDownloadFiles, chooseBuildOption, logAndExit, getCourseBasicInfo, getUrlStatus }
