@@ -316,10 +316,10 @@ const getCourseBasicInfo = async (content: string): Promise<{ status: boolean, u
       .forEach(lineString => {
         if (!title || !url) {
           if (lineString.startsWith('title=')) {
-            title = lineString.replace('title=', '')
+            title = lineString.replace('title=', '').replace('\r', '')
           }
           if (lineString.startsWith('course_name=')) {
-            url = `http://s.langlangyun.com/${lineString.replace('course_name=', '')}/`
+            url = `http://s.langlangyun.com/${lineString.replace('course_name=', '').replace('\r', '')}/`
           }
         }
       })
