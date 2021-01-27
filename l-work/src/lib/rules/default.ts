@@ -1,6 +1,8 @@
 import { validStartString, isAValidAddr, isHasConflictKey, isValidOptionsValue } from './public'
 import * as colors from 'colors'
 const globalAny: any = global
+import cli from 'cli-ux'
+
 /**
  * @param fn 测试对象数组,成员是行号和内容
  * 1. 无效key
@@ -13,9 +15,10 @@ const globalAny: any = global
  */
 export default function defaultRule(objArr: { line: number, content: string }[]) {
   let scopeKeysArr: string[] = [];
-  console.log(colors.magenta('Start...'));
+  cli.action.start("Start basic testing...")
   objArr.forEach((i) => {
-    // 不是空行和分段部分,就测试
+    // 忽略windows CRLF
+    i.content = i.content.replace(/[^\x20-\x7E]/gmi, "")
     if (i.content !== '') {
       const key = i.content.split('=')[0]?.trim()
       const value = i.content.split('=')[1]?.trim()
@@ -30,7 +33,7 @@ export default function defaultRule(objArr: { line: number, content: string }[])
             console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is invalid.\n`));
           }
           if (scopeKeysArr.includes(key)) {
-            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is repeat.\n`));
+            console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(key))} is repeat. ${i.content}\n`));
           }
           if (value.includes(' ') || key.includes(' ')) {
             console.log(colors.red(`line ${i.line}${colors.green(' :: ')}${colors.underline(colors.green(value))} has redundant space.\n`));
@@ -51,5 +54,5 @@ export default function defaultRule(objArr: { line: number, content: string }[])
       }
     }
   });
-  console.log(colors.magenta('End...'));
+  cli.action.stop()
 }
