@@ -308,7 +308,9 @@ class Help {
     }
     return Gif
   }
-
+  /**
+    * 恭喜过关动画,默认不可见
+    */
   static initGxggGif(parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
     return Help.initGif({
       json: 'gxgg2_json',
@@ -317,13 +319,27 @@ class Help {
       y: 25
     }, parentDisplayObj, completeCbFn, isOnce)
   }
-
+  /**
+    * 很遗憾动画,默认不可见
+    */
   static initRegretGif(parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
     return Help.initGif({
       json: "henyihan_json",
       img: "henyihan_png",
       x: 520,
       y: 100,
+    }, parentDisplayObj, completeCbFn, isOnce)
+  }
+
+  /**
+   * 太棒了动画,默认不可见
+   */
+  static initTaibangleGif(parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
+    return Help.initGif({
+      json: 'taibangle_json',
+      img: 'taibangle_png',
+      x: 500,
+      y: 150,
     }, parentDisplayObj, completeCbFn, isOnce)
   }
 
