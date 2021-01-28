@@ -49,6 +49,7 @@ export const validStartString = [
   'pause_icon',
   'prev_page_icon',
   'prev_icon',
+  'prelude_video',
   'pagination',
   'page_btn_position',
   'picture',
