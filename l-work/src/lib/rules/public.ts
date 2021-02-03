@@ -14,6 +14,7 @@ export const validStartString = [
   'background_music',
   'bottom_bar_position',
   'backdrop',
+  'character',
   'cdn_name',
   'course_name',
   'control_bar_position',
