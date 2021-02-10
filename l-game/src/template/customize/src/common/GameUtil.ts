@@ -17,6 +17,16 @@ class GameUtil {
     isClearChannelList && GameUtil.clearChannel();
     let channel: egret.SoundChannel = playSound.play(0, isLoop ? -1 : 1);
     GameUtil.channelList.push(channel);
+    switch (sound) {
+      case 'sound_wrong_mp3':
+        Help.customizeEgretApi('report', 'mistake')
+        break;
+      case 'sound_dacuole_mp3':
+        Help.customizeEgretApi('report', 'mistake')
+        break;
+      default:
+        break;
+    }
     return channel
   }
   // 动画
