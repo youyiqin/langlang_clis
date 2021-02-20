@@ -238,8 +238,8 @@ class Help {
    * 注意：target的类型被规定为了eui.Image，后期可以根据需求更改数据类型
    * 使用此属性,必须手动绑定 stage 对象为this
    */
-  static dragEvent(target: egret.DisplayObject | eui.Image, root: any, topParentDisplayObj: any, mouseUpCallback?: Function): void {
-
+  static dragEvent(target: egret.DisplayObject | eui.Image, root: any, topParentDisplayObj: any, mouseUpCallback?: (timeoutId: number) => void): void {
+    let timeoutId = 0;
     // 可以点击的属性
     target.touchEnabled = true;
     // 高频绘制的控制flag
@@ -276,9 +276,10 @@ class Help {
       } else if (moveY > root.stage.stageHeight - target.height) {
         moveY = root.stage.stageHeight - target.height;
       }
+
       // 处理：高频事件下，防止重复绘制
       // 回调函数会在浏览器刷新重绘之前执行,并且设置 scheduledAnimationFrame 为 false,防止mouseMove函数频繁执行.
-      window.requestAnimationFrame(() => {
+      timeoutId = window.requestAnimationFrame(() => {
         scheduledAnimationFrame = false;
         target.x = moveX;
         target.y = moveY;
@@ -287,8 +288,8 @@ class Help {
 
     function mouseUp(evt: egret.TouchEvent): void {
       root.stage.removeEventListener(egret.TouchEvent.TOUCH_MOVE, mouseMove, root);
-      // 抬起时，碰撞检测
-      mouseUpCallback && mouseUpCallback()
+      // 抬起时，碰撞检测            
+      mouseUpCallback && mouseUpCallback(timeoutId)
     }
   }
 
@@ -308,7 +309,9 @@ class Help {
     }
     return Gif
   }
-
+  /**
+    * 恭喜过关动画,默认不可见
+    */
   static initGxggGif(parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
     return Help.initGif({
       json: 'gxgg2_json',
@@ -317,13 +320,27 @@ class Help {
       y: 25
     }, parentDisplayObj, completeCbFn, isOnce)
   }
-
+  /**
+    * 很遗憾动画,默认不可见
+    */
   static initRegretGif(parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
     return Help.initGif({
       json: "henyihan_json",
       img: "henyihan_png",
       x: 520,
       y: 100,
+    }, parentDisplayObj, completeCbFn, isOnce)
+  }
+
+  /**
+   * 太棒了动画,默认不可见
+   */
+  static initTaibangleGif(parentDisplayObj: any, completeCbFn?: Function, isOnce?: boolean): egret.MovieClip {
+    return Help.initGif({
+      json: 'taibangle_json',
+      img: 'taibangle_png',
+      x: 500,
+      y: 150,
     }, parentDisplayObj, completeCbFn, isOnce)
   }
 
@@ -339,14 +356,6 @@ class Help {
    */
   static PlayWrongSound(isClearOther = false) {
     GameUtil.playSound('sound_wrong_mp3', isClearOther)
-  }
-
-  /**
-   * 循环播放帧动画,返回动画对象
-   */
-  static loopPlayMovieClip(frameMovieClip: egret.MovieClip) {
-    frameMovieClip.gotoAndPlay(1, -1)
-    return frameMovieClip
   }
 
 }
