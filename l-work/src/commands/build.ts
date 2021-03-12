@@ -21,15 +21,17 @@ export default class Build extends Command {
     help: flags.help({ char: 'h' }),
     level: flags.string({ char: 'l', description: '项目目录查找层级,默认查两层.因此如果当前目录下有多个需要构建的子目录,或者当前目录就是需要构建的目录,都能自动构建.', default: '2' }),
     env: flags.string({ char: 'e', description: '构建环境,默认使用product,可选的有226.', default: 'product', options: ['product', '226'] }),
-    template: flags.boolean({ char: 't', description: '是否使用公共模板,默认使用公共模板.', default: true })
+    template: flags.boolean({ char: 't', description: '是否使用公共模板,默认使用公共模板.', default: true }),
+    from: flags.string({ char: 'f', description: '制定构建类型,支持 cocos / egret / h5' })
   }
 
   async run() {
     const { args, flags } = this.parse(Build)
     const targetPath = args.path
-    const level = flags.level
-    const env = flags.env
-    const template = flags.template
+    // const level = flags.level
+    // const env = flags.env
+    // const template = flags.template
+    const { level, env, template, from } = flags;
     // get target paths
     // 一个数组,每个元素都是一个对象,包含文件名和目录名
     cli.action.start(Colors.white('识别指定/默认地址内的目录...'))
@@ -42,7 +44,7 @@ export default class Build extends Command {
       buildTasksArr.push(new Promise(async (resolve, reject) => {
         // generator svn info data
         // item is target full path, it is a directory
-        const svnData = await getSvnUrl(item)
+        const svnData = await getSvnUrl(item, from)
         const postData = {
           env,
           template,

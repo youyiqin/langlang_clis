@@ -1,7 +1,7 @@
 export type svnUrlDataType = {
   url: string;
   relativeUrl: string;
-  buildType: string | undefined;
+  buildType: string;
 }
 
 export type certificateType = 'kejian' | 'cookie'
