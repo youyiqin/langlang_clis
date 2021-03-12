@@ -11,11 +11,21 @@ export default class Time extends Command {
   async run() {
     // get clipborad strings
     const targetString = clipboardy.readSync()
-    const result = targetString.split('\r\n')
-      .filter((line: string) => line.endsWith('s'))
-      .map((line: string) => line.replace(/s/g, '').match(/([0-9.]+)$/)[1])
-    console.log(result);
-    clipboardy.writeSync(`[${[0, ...result]}]`)
+    try {
+      const result = targetString.split('\r\n')
+        .filter((line: string) => line.endsWith('s'))
+        .map((line: string) => {
+          const res = line.replace(/s/g, '').match(/([0-9.]+)$/)
+          if (res != null) {
+            return res[0]
+          }
+          return 0
+        })
+      console.log(result);
+      clipboardy.writeSync(`[${[0, ...result]}]`)
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
